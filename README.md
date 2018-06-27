@@ -1,7 +1,7 @@
-# singularity-jupyter
+# Jupyter and Singularity
 Jupyter Miniconda Python 3 and Singularity Container
 
-This is an update from [](https://github.com/singularityhub/jupyter) the offical jupyter singularity container that requires root permission to run:
+This is an update from [](https://github.com/singularityhub/jupyter) the offical jupyter singularity container that requires root permissions to run:
 * [NEW] Only need root permissions to create the container
 * [NEW] Miniconda (smaller in size)
 
@@ -10,6 +10,7 @@ If you haven't installed singularity, do that with [these instructions](http://s
       git clone https://github.com/MBlaschek/singularity-jupyter jupyter
       cd jupyter
 
+## CREATE
 Let's now create the notebook container:
 
 You can choose now if you prefer a writeable container (for development, installation of additional packages, ...) or a deployment container (read_only, default) [read more](http://singularity.lbl.gov/docs-build-container):
@@ -20,6 +21,7 @@ or for deployment:
 
      sudo singularity build jupyter.simg Singularity
 
+## RUN
 Then to run the container:
 
      singularity run jupyter.img
