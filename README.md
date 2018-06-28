@@ -38,4 +38,8 @@ Anyway you should see output like this:
 
 ![jupyter.png](jupyter.png)
 
-The current directory is where your server starts.
+The current directory is where your server starts. In your browser you should be able to navigate to the link from the console:
+![jupyterweb.png](jupyterweb.png)
+
+The password is **super-secret**. You can change that easily within the Singularity file.
+
