@@ -43,3 +43,35 @@ The current directory is where your server starts. In your browser you should be
 
 The password is **super-secret**. You can change that easily within the Singularity file.
 
+## Use your container inside an existing Jupyter Notebook Server
+In order to use your container with an existing notebook server you need to register yout ipykernel with that server.
+Other people have done this:
+* [Tensorflow](https://github.com/clemsonciti/singularity-in-jupyter-notebook)
+* [Kernel](https://gist.github.com/mattpitkin/35ac19214048e96c391e948d7ec34ca5)
+
+Maybe I made a mistake, but I could not figure out how to run these without root permission. Because the kernel needs access to the `kernel.json` file usually in `/run/user/1000/jupyter`. This directory is not accessable by default from inside the container. 
+To register your container, in the `${HOME}/.local/share/jupyter/kernels` create a new directory, e.g. myimage, and add a `kernel.json` file containing:
+
+```
+{
+ "language": "python",
+ "argv": ["/usr/bin/singularity",
+   "exec",
+   "-B",
+   "/run/user:/run/user",
+   "/dir/to/your/image/jupyter.img",
+   "/opt/conda/bin/python",
+   "-m",
+   "ipykernel",
+   "-f",
+   "{connection_file}"
+ ],
+ "display_name": "Python 3 (Singularity)"
+}
+
+```
+where adding the `-B /run/user:/run/user` option is important. Change the path to your image. Then start a jupyter notebook with
+
+      jupyter notebook &
+
+and there should be a usable Python 3 (Singularity) kernel option!
