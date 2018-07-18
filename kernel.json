@@ -2,7 +2,9 @@
  "language": "python",
  "argv": ["/usr/local/bin/singularity",
    "exec",
-   "/home/mblaschek/workspace/jupyter3.img",
+   "-B",
+   "/run/user:/run/user"
+   "/dir/to/your/image/jupyter3.img",
    "/opt/conda/bin/python",
    "-m",
    "ipykernel",
