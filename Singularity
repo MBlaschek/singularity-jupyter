@@ -5,7 +5,7 @@ From: continuumio/miniconda3
 %help
 
 	Run a jupyter notebook Server in a container
-	Usually: https://localhost:8888
+	Usually: http://localhost:8888
 
 %label
 
