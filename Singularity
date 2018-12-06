@@ -5,16 +5,18 @@ From: continuumio/miniconda3
 %help
 
 	Run a jupyter notebook Server in a container
+	Usually: https://localhost:8888
 
 %label
 
 	Author: M. Blaschek
-	Anaconda Python and jupyter	
+	Anaconda Python 3 and jupyter notebook
 
 %runscript
 
-     echo "Starting notebook..."
-     exec /opt/conda/bin/jupyter notebook --ip='*' --no-browser --NotebookApp.token='super-secret'
+     echo "Starting notebook... $(/opt/conda/bin/jupyter --version)"
+     exec /opt/conda/bin/jupyter --paths
+     exec /opt/conda/bin/jupyter notebook --NotebookApp.allow_origin="*" --no-browser --NotebookApp.token='super-secret'
 
 %post
 
