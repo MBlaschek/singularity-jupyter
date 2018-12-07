@@ -22,9 +22,14 @@ From: continuumio/miniconda3
 
      # Install jupyter notebook
      /opt/conda/bin/conda install jupyter numpy matplotlib pandas -y --quiet 
+     # rename Container Kernel:
+     sed -i 's/Python 3/Python 3 (S)/' /opt/conda/share/jupyter/kernels/python3/kernel.json
      apt-get autoremove -y
      apt-get clean
      
 %environment
 	# important part otherwise the server will try to access /run/user and fail
-	export JUPYTER_RUNTIME_DIR=$PWD
+	export JUPYTER_RUNTIME_DIR=$PWD/.runtime
+	# make sure we use container kernels, otherwise this will be overwritten 
+	# by $HOME/.local/share/jupyter/kernels
+	export JUPYTER_DATA_DIR=$PWD/.kernels
