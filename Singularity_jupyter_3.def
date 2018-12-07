@@ -1,0 +1,48 @@
+BootStrap: localimage
+From: jup3
+
+
+%help
+	Run a jupyter notebook Server in a container
+	Usually: http://localhost:8888
+
+%labels
+	Author: M. Blaschek
+	Anaconda Python 3 (plus kernel 2.7) and jupyter
+
+%runscript
+	echo "Starting Ipython..."
+	exec /opt/conda/bin/ipython
+
+%apprun notebook
+    echo "Starting notebook... $(/opt/conda/bin/jupyter --version)"
+    exec /opt/conda/bin/jupyter --paths
+	exec /opt/conda/bin/jupyter notebook --NotebookApp.allow_origin="*" --no-browser --NotebookApp.token='super-secret'
+
+%apprun lab
+    echo "Starting lab... $(/opt/conda/bin/jupyter --version)"
+    exec /opt/conda/bin/jupyter --paths
+	exec /opt/conda/bin/jupyter lab --NotebookApp.allow_origin="*" --no-browser --NotebookApp.token='super-secret'
+
+%apprun py2
+	echo "Starting Ipython 2"
+	exec /opt/conda/envs/py2/bin/ipython
+
+%post   
+	# Install jupyter notebook
+	/opt/conda/bin/conda install jupyter jupyterlab numpy matplotlib pandas netCDF4 scipy numba xarray cartopy -y 
+	/opt/conda/bin/conda create -n py2 python=2 ipykernel numpy pandas matplotlib scipy xarray numba netCDF4 -y
+	/opt/conda/envs/py2/bin/python -m ipykernel install
+	sed -i 's/Python 3/Python 3 (S)/' /opt/conda/share/jupyter/kernels/python3/kernel.json
+	sed -i 's/Python 2/Python 2 (S)/' /usr/local/share/jupyter/kernels/python2/kernel.json
+     
+	# Clean
+	apt-get autoremove -y
+	apt-get clean
+     
+%environment
+	# important part otherwise the server will try to access /run/user and fail
+	export JUPYTER_RUNTIME_DIR=$PWD/.runtime
+	# Make sure we use container kernels
+	export JUPYTER_DATA_DIR=$PWD/.kernels
+
