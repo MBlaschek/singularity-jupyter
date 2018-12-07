@@ -1,4 +1,7 @@
 # Jupyter and Singularity
+
+**Updated: 7.12.2018, new singularity version 3.0.1**
+
 Jupyter Miniconda Python 3 and Singularity Container
 
 This is an update from [](https://github.com/singularityhub/jupyter) the offical jupyter singularity container that requires root permissions to run:
@@ -12,7 +15,7 @@ If you haven't installed singularity, do that with [these instructions](http://s
 
 It includes a line at the end that is quite important for jupyter to run:
       
-      export JUPYTER_RUNTIME_DIR=/opt/runtime
+      export JUPYTER_RUNTIME_DIR=$PWD/.runtime
       
 This line tells jupyter to use a specific directory for its runtime. Otherwise it would try to use the default `XDG_RUNTIME_DIR`, which is by default set to `/run/user/...` and not accessable via the container.
 
@@ -21,24 +24,24 @@ Let's now create the notebook container:
 
 You can choose now if you prefer a writeable container (for development, installation of additional packages, ...) or a deployment container (read_only, default) [read more](http://singularity.lbl.gov/docs-build-container):
 
-     sudo singularity build --writable jupyter.img Singularity
+     sudo singularity build --writeable jupyter3.sif Singularity
      
 or for deployment:
 
-     sudo singularity build jupyter.simg Singularity
+     sudo singularity build jupyter3.sif Singularity
 
 ## RUN
 Then to run the container:
 
-     singularity run jupyter.img
+     singularity run jupyter3.sif
      
 or for the read only version:
 
-    singularity run jupyter.simg
+    singularity run jupyter3.sif
     
 or for the writable version:
 
-    sudo singularity run --writable jupyter.img
+    sudo singularity run --writable jupyter3.sif
     
 Anyway you should see output like this:
 
@@ -62,7 +65,7 @@ To register your container, in the `${HOME}/.local/share/jupyter/kernels` create
  "language": "python",
  "argv": ["/usr/bin/singularity",
    "exec",
-   "/dir/to/your/image/jupyter.img",
+   "/dir/to/your/image/jupyter3.sif",
    "/opt/conda/bin/python",
    "-m",
    "ipykernel",
