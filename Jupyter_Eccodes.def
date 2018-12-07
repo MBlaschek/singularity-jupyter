@@ -22,9 +22,6 @@ From: jupyter3
 	apt-get autoremove -y
 	apt-get clean
 
-	# Add SRVX8 directories
-	mkdir -p /raid8/srvx1
-	mkdir -p /opt/dev
 	# Add ECMWF Software
 	
 	# required for CMAKE
