@@ -14,18 +14,19 @@ From: continuumio/miniconda3
 
 %runscript
 
-     echo "Starting notebook... $(/opt/conda/bin/jupyter --version)"
-     exec /opt/conda/bin/jupyter --paths
-     exec /opt/conda/bin/jupyter notebook --NotebookApp.allow_origin="*" --no-browser --NotebookApp.token='super-secret'
+    	echo "Starting notebook... $(/opt/conda/bin/jupyter --version)"
+     	echo "$(/opt/conda/bin/jupyter --paths)"
+	echo "Token: super-secret"
+     	exec /opt/conda/bin/jupyter notebook --NotebookApp.allow_origin="*" --no-browser --NotebookApp.token='super-secret' $@
 
 %post
 
-     # Install jupyter notebook
-     /opt/conda/bin/conda install jupyter numpy matplotlib pandas -y --quiet 
-     # rename Container Kernel:
-     sed -i 's/Python 3/Python 3 (S)/' /opt/conda/share/jupyter/kernels/python3/kernel.json
-     apt-get autoremove -y
-     apt-get clean
+     	# Install jupyter notebook
+     	/opt/conda/bin/conda install jupyter numpy matplotlib pandas -y --quiet 
+     	# rename Container Kernel:
+     	sed -i 's/Python 3/Py3-Sy/' /opt/conda/share/jupyter/kernels/python3/kernel.json
+     	apt-get autoremove -y
+     	apt-get clean
      
 %environment
 	# important part otherwise the server will try to access /run/user and fail
