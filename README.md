@@ -16,33 +16,37 @@ If you haven't installed singularity, do that with [these instructions](http://s
 It includes a line at the end that is quite important for jupyter to run:
       
       export JUPYTER_RUNTIME_DIR=$PWD/.runtime
-      
+
 This line tells jupyter to use a specific directory for its runtime. Otherwise it would try to use the default `XDG_RUNTIME_DIR`, which is by default set to `/run/user/...` and not accessable via the container.
 
 ## CREATE
 Let's now create the notebook container:
 
+* Jupyter Python 3 Notebook Container: `jupyter3.def` 
+* Jupyter Python 2 & 3 Notebook Container: `jupyter23.def`
+* Jupyter Python 2 & 3 Notebook + Eccodes Library: `jupyter_eccodes.def`(depends on the image from `jupyter23.def` = `jupyter23.sif `)
+
 You can choose now if you prefer a writeable container (for development, installation of additional packages, ...) or a deployment container (read_only, default) [read more](http://singularity.lbl.gov/docs-build-container):
 
-     sudo singularity build --writeable jupyter3.sif Singularity
-     
+     sudo singularity build --writeable jupyter3.sif jupyter3.def
+
 or for deployment:
 
-     sudo singularity build jupyter3.sif Singularity
+     sudo singularity build jupyter3.sif jupyter3.def
 
 ## RUN
 Then to run the container:
 
      singularity run jupyter3.sif
-     
+
 or for the read only version:
 
     singularity run jupyter3.sif
-    
+
 or for the writable version:
 
     sudo singularity run --writable jupyter3.sif
-    
+
 Anyway you should see output like this:
 
 ![jupyter.png](jupyter.png)
@@ -101,14 +105,14 @@ and make sure the runtime directory is accessable from inside the container. In 
       
       export JUPYTER_RUNTIME_DIR=$HOME/.local/share/jupyter/runtime
       jupyter notebook &
-  
+
 That should solve the issue and make your contained jupyter environment accessable via your notebook server. :)
 
 #### RUNTIME DIR
 I came across a few problems, which related to the `RUNTIME_DIR` and is quite import to run your server without root permissions. 
       
       XDG_RUNTIME_DIR=/run/user/1000    # Default in Ubuntu (inside the container)
-      
+
 That is not a good path. Therefore we change it to a defined path inside the container (already in the singularity file). 
 The following shows a way around, not necessary if you use the above recipe.
 

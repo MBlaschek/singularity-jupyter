@@ -4,19 +4,20 @@ From: continuumio/miniconda3
 
 %help
 
-	Run a jupyter notebook Server in a container
-	Usually: http://localhost:8888
+	    Run a jupyter notebook Server in a container
+	    Usually: http://localhost:8888
+        Anaconda Python 3
 
 %label
 
-	Author: M. Blaschek
-	Anaconda Python 3 and jupyter notebook
+	    Author: M. Blaschek
+	    version: 0.5
 
 %runscript
 
     	echo "Starting notebook... $(/opt/conda/bin/jupyter --version)"
      	echo "$(/opt/conda/bin/jupyter --paths)"
-	echo "Token: super-secret"
+	    echo "Token: super-secret"
      	exec /opt/conda/bin/jupyter notebook --NotebookApp.allow_origin="*" --no-browser --NotebookApp.token='super-secret' $@
 
 %post
@@ -29,8 +30,8 @@ From: continuumio/miniconda3
      	apt-get clean
      
 %environment
-	# important part otherwise the server will try to access /run/user and fail
-	export JUPYTER_RUNTIME_DIR=$PWD/.runtime
-	# make sure we use container kernels, otherwise this will be overwritten 
-	# by $HOME/.local/share/jupyter/kernels
-	export JUPYTER_DATA_DIR=$PWD/.kernels
+    	# important part otherwise the server will try to access /run/user and fail
+    	export JUPYTER_RUNTIME_DIR=$PWD/.runtime
+	    # make sure we use container kernels, otherwise this will be overwritten 
+    	# by $HOME/.local/share/jupyter/kernels
+	    export JUPYTER_DATA_DIR=$PWD/.kernels
