@@ -1,6 +1,6 @@
 # Jupyter and Singularity
 
-**Updated: 7.12.2018, new singularity version 3.0.1**
+**Updated: 10.2.2019, new singularity version 3.0.1**
 
 Jupyter Miniconda Python 3 and Singularity Container
 
