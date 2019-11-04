@@ -6,7 +6,7 @@ From: centos610.sif
 
 	Run a jupyter notebook Server in a container
 	Usually: http://localhost:8888
-        Anaconda Python 3
+	Anaconda Python 3
 
 %labels
 
@@ -14,17 +14,17 @@ From: centos610.sif
 	version: 0.5
 
 %files
-    run.sh /usr/bin
+	run.sh /usr/bin
 
 %runscript
-    exec /usr/bin/run.sh "$@"
+	exec /usr/bin/run.sh "$@"
 
 %apprun notebook
-    echo "Notebook..."
-    echo "Token: super-secret"
-    echo "$(/opt/conda/bin/jupyter --paths)"
-    exec /opt/conda/bin/jupyter notebook --NotebookApp.allow_origin="*" --no-browser --NotebookApp.token='super-secret' $@
-    
+	echo "Notebook..."
+	echo "Token: super-secret"
+	echo "$(/opt/conda/bin/jupyter --paths)"
+	exec /opt/conda/bin/jupyter notebook --NotebookApp.allow_origin="*" --no-browser --NotebookApp.token='super-secret' $@
+	
 %post
 	export PATH=/opt/conda/bin:$PATH
 	wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-4.5.11-Linux-x86_64.sh -O ~/miniconda.sh && \
@@ -40,7 +40,7 @@ From: centos610.sif
 	sed -i 's/Python 3/Py3-Sy/' /opt/conda/share/jupyter/kernels/python3/kernel.json
 	yum clean all
 
-     
+	 
 %environment
 	export PATH=/opt/conda/bin:$PATH
 	# important part otherwise the server will try to access /run/user and fail

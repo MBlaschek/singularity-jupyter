@@ -6,61 +6,61 @@ From: centos610.sif
 # From: continuumio/miniconda3
 
 %help
-	    Run a jupyter notebook-server/shell in a container
-	    Usually: http://localhost:8888
-		Anaconda Python 3 (plus kernel 2.7) and jupyter
+	Run a jupyter notebook-server/shell in a container
+	Usually: http://localhost:8888
+	Anaconda Python 3 (plus kernel 2.7) and jupyter
 
 %labels
-	    Author: M. Blaschek
-        version: 0.5
-	    Date: 14.2.2019
+	Author: M. Blaschek
+	version: 0.5
+	Date: 14.2.2019
 
 %files
-        run.sh /usr/bin
+	run.sh /usr/bin
 
 %runscript
-    	exec /usr/bin/run.sh "$@"
+	exec /usr/bin/run.sh "$@"
 
 %apprun notebook
-    	echo "Notebook..."
-    	echo "Token: super-secret"
-    	echo "$(/opt/conda/bin/jupyter --paths)"
-    	exec /opt/conda/bin/jupyter notebook --NotebookApp.allow_origin="*" --no-browser --NotebookApp.token='super-secret' $@
-    
+	echo "Notebook..."
+	echo "Token: super-secret"
+	echo "$(/opt/conda/bin/jupyter --paths)"
+	exec /opt/conda/bin/jupyter notebook --NotebookApp.allow_origin="*" --no-browser --NotebookApp.token='super-secret' $@
+	
 %apprun lab
-    	echo "Lab..."
-    	echo "Token: super-secret"
-    	echo "$(/opt/conda/bin/jupyter --paths)"
-    	exec /opt/conda/bin/jupyter lab --NotebookApp.allow_origin="*" --no-browser --NotebookApp.token='super-secret' $@
+	echo "Lab..."
+	echo "Token: super-secret"
+	echo "$(/opt/conda/bin/jupyter --paths)"
+	exec /opt/conda/bin/jupyter lab --NotebookApp.allow_origin="*" --no-browser --NotebookApp.token='super-secret' $@
 
 %apprun py2
-	    echo "Starting Ipython 2"
-        echo "$(/opt/conda/envs/py2/bin/jupyter --paths)"
-	    exec /opt/conda/envs/py2/bin/ipython $@
+	echo "Starting Ipython 2"
+	echo "$(/opt/conda/envs/py2/bin/jupyter --paths)"
+	exec /opt/conda/envs/py2/bin/ipython $@
 
 %post   
-		export PATH=/opt/conda/bin:$PATH
-		wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-4.5.11-Linux-x86_64.sh -O ~/miniconda.sh && \
-		/bin/bash ~/miniconda.sh -b -p /opt/conda && \
-		rm ~/miniconda.sh && \
-		/opt/conda/bin/conda clean -tipsy && \
-		ln -s /opt/conda/etc/profile.d/conda.sh /etc/profile.d/conda.sh && \
-		echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
-		echo "conda activate base" >> ~/.bashrc
-	    # Install jupyter notebook
-	    /opt/conda/bin/conda install jupyter jupyterlab numpy matplotlib pandas netCDF4 scipy numba xarray cartopy -y 
-	    /opt/conda/bin/conda create -n py2 python=2 ipykernel numpy pandas matplotlib scipy xarray numba netCDF4 -y
-	    /opt/conda/envs/py2/bin/python -m ipykernel install
-	    sed -i 's/Python 3/Py3-Sy/' /opt/conda/share/jupyter/kernels/python3/kernel.json
-	    sed -i 's/Python 2/Py2-Sy/' /usr/local/share/jupyter/kernels/python2/kernel.json
-         
-	    # Clean
-		yum clean all
-     
+	export PATH=/opt/conda/bin:$PATH
+	wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-4.5.11-Linux-x86_64.sh -O ~/miniconda.sh && \
+	/bin/bash ~/miniconda.sh -b -p /opt/conda && \
+	rm ~/miniconda.sh && \
+	/opt/conda/bin/conda clean -tipsy && \
+	ln -s /opt/conda/etc/profile.d/conda.sh /etc/profile.d/conda.sh && \
+	echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
+	echo "conda activate base" >> ~/.bashrc
+	# Install jupyter notebook
+	/opt/conda/bin/conda install jupyter jupyterlab numpy matplotlib pandas netCDF4 scipy numba xarray cartopy -y 
+	/opt/conda/bin/conda create -n py2 python=2 ipykernel numpy pandas matplotlib scipy xarray numba netCDF4 -y
+	/opt/conda/envs/py2/bin/python -m ipykernel install
+	sed -i 's/Python 3/Py3-Sy/' /opt/conda/share/jupyter/kernels/python3/kernel.json
+	sed -i 's/Python 2/Py2-Sy/' /usr/local/share/jupyter/kernels/python2/kernel.json
+	 
+	# Clean
+	yum clean all
+ 
 %environment
-		export PATH=/opt/conda/bin:$PATH
-	    # important part otherwise the server will try to access /run/user and fail
-	    export JUPYTER_RUNTIME_DIR=$PWD/.runtime
-	    # Make sure we use container kernels
-	    export JUPYTER_DATA_DIR=$PWD/.kernels
+	export PATH=/opt/conda/bin:$PATH
+	# important part otherwise the server will try to access /run/user and fail
+	export JUPYTER_RUNTIME_DIR=$PWD/.runtime
+	# Make sure we use container kernels
+	export JUPYTER_DATA_DIR=$PWD/.kernels
 
