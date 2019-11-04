@@ -1,6 +1,6 @@
 Bootstrap: docker
 From: centos:6.10
-
+#From: centos:latest
 
 %help
 	Centos 6.10

@@ -2,6 +2,7 @@ BootStrap: localimage
 From: jupyter23.sif
 
 
+
 %help
 	    Run a jupyter notebook Server in a container
 	    Usually: http://localhost:8888
@@ -123,7 +124,7 @@ EOF
 	    # Clean
 	    apt-get autoremove -y
 	    apt-get clean
-	    
+		   
 	    # required for CMAKE
 	    export PATH=/opt/conda/bin:$PATH
 	    export LD_LIBRARY_PATH=/opt/conda/lib:$LD_LIBRARY_PATH
@@ -218,6 +219,7 @@ EOF
 	    # Make sure we use container kernels
 	    export JUPYTER_DATA_DIR=$PWD/.kernels
 	    # Development
+
         export PATH=/opt/conda/bin:$PATH
 	    export LD_LIBRARY_PATH=/opt/conda/lib:/usr/local/lib:$LD_LIBRARY_PATH
         # RTTOV Options
@@ -230,5 +232,3 @@ EOF
         export RTTOV_GUI_EMISS_DIR=${RTTOV_GUI_PREFIX}/../
         export RTTOV_GUI_COEFF_DIR=${RTTOV_GUI_PREFIX}/../rtcoef_rttov${RTTOV_VERSION}
         export RTTOV_GUI_PROFILE_DIR=${RTTOV_GUI_PREFIX}/../rttov_test/profile-datasets-hdf
-
-

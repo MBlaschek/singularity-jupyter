@@ -13,13 +13,18 @@ From: centos610.sif
 	Author: M. Blaschek
 	version: 0.5
 
+%files
+    run.sh /usr/bin
+
 %runscript
+    exec /usr/bin/run.sh "$@"
 
-	echo "Starting notebook... $(/opt/conda/bin/jupyter --version)"
-	echo "$(/opt/conda/bin/jupyter --paths)"
-	echo "Token: super-secret"
-	exec /opt/conda/bin/jupyter notebook --NotebookApp.allow_origin="*" --no-browser --NotebookApp.token='super-secret' $@
-
+%apprun notebook
+    echo "Notebook..."
+    echo "Token: super-secret"
+    echo "$(/opt/conda/bin/jupyter --paths)"
+    exec /opt/conda/bin/jupyter notebook --NotebookApp.allow_origin="*" --no-browser --NotebookApp.token='super-secret' $@
+    
 %post
 	export PATH=/opt/conda/bin:$PATH
 	wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-4.5.11-Linux-x86_64.sh -O ~/miniconda.sh && \

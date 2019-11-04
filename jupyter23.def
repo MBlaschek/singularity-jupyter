@@ -1,6 +1,9 @@
-BootStrap: docker
-From: continuumio/miniconda3
-
+# Local centos 6.10 image
+Bootstrap: localimage
+From: centos610.sif
+# most recent and debian image
+# BootStrap: docker
+# From: continuumio/miniconda3
 
 %help
 	    Run a jupyter notebook-server/shell in a container
@@ -36,6 +39,14 @@ From: continuumio/miniconda3
 	    exec /opt/conda/envs/py2/bin/ipython $@
 
 %post   
+		export PATH=/opt/conda/bin:$PATH
+		wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-4.5.11-Linux-x86_64.sh -O ~/miniconda.sh && \
+		/bin/bash ~/miniconda.sh -b -p /opt/conda && \
+		rm ~/miniconda.sh && \
+		/opt/conda/bin/conda clean -tipsy && \
+		ln -s /opt/conda/etc/profile.d/conda.sh /etc/profile.d/conda.sh && \
+		echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
+		echo "conda activate base" >> ~/.bashrc
 	    # Install jupyter notebook
 	    /opt/conda/bin/conda install jupyter jupyterlab numpy matplotlib pandas netCDF4 scipy numba xarray cartopy -y 
 	    /opt/conda/bin/conda create -n py2 python=2 ipykernel numpy pandas matplotlib scipy xarray numba netCDF4 -y
@@ -44,10 +55,10 @@ From: continuumio/miniconda3
 	    sed -i 's/Python 2/Py2-Sy/' /usr/local/share/jupyter/kernels/python2/kernel.json
          
 	    # Clean
-	    apt-get autoremove -y
-	    apt-get clean
+		yum clean all
      
 %environment
+		export PATH=/opt/conda/bin:$PATH
 	    # important part otherwise the server will try to access /run/user and fail
 	    export JUPYTER_RUNTIME_DIR=$PWD/.runtime
 	    # Make sure we use container kernels
