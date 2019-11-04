@@ -1,0 +1,45 @@
+BootStrap: localimage
+From: centos610.sif
+
+
+%help
+
+	Run a jupyter notebook Server in a container
+	Usually: http://localhost:8888
+        Anaconda Python 3
+
+%labels
+
+	Author: M. Blaschek
+	version: 0.5
+
+%runscript
+
+	echo "Starting notebook... $(/opt/conda/bin/jupyter --version)"
+	echo "$(/opt/conda/bin/jupyter --paths)"
+	echo "Token: super-secret"
+	exec /opt/conda/bin/jupyter notebook --NotebookApp.allow_origin="*" --no-browser --NotebookApp.token='super-secret' $@
+
+%post
+	export PATH=/opt/conda/bin:$PATH
+	wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-4.5.11-Linux-x86_64.sh -O ~/miniconda.sh && \
+	/bin/bash ~/miniconda.sh -b -p /opt/conda && \
+	rm ~/miniconda.sh && \
+	/opt/conda/bin/conda clean -tipsy && \
+	ln -s /opt/conda/etc/profile.d/conda.sh /etc/profile.d/conda.sh && \
+	echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
+	echo "conda activate base" >> ~/.bashrc
+	# Install jupyter notebook
+	/opt/conda/bin/conda install jupyter numpy matplotlib pandas -y --quiet 
+	# rename Container Kernel:
+	sed -i 's/Python 3/Py3-Sy/' /opt/conda/share/jupyter/kernels/python3/kernel.json
+	yum clean all
+
+     
+%environment
+	export PATH=/opt/conda/bin:$PATH
+	# important part otherwise the server will try to access /run/user and fail
+	export JUPYTER_RUNTIME_DIR=$PWD/.runtime
+	# make sure we use container kernels, otherwise this will be overwritten 
+	# by $HOME/.local/share/jupyter/kernels
+	export JUPYTER_DATA_DIR=$PWD/.kernels

@@ -1,0 +1,18 @@
+Bootstrap: docker
+From: centos:6.10
+
+
+%help
+	Centos 6.10
+
+%labels
+	Author: MB
+	Version: 0.1
+
+%post
+	export LANG=C.UTF-8
+	export LC_ALL=C.UTF-8
+	yum check-update && yum -y update
+	yum install -y wget bzip2 ca-certificates curl git
+	yum clean all
+

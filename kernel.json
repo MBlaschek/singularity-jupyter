@@ -1,0 +1,15 @@
+{
+ "language": "python",
+ "argv": ["/usr/local/bin/singularity",
+   "exec",
+   "-B",
+   "/run/user:/run/user"
+   "/dir/to/your/image/jupyter3.img",
+   "/opt/conda/bin/python",
+   "-m",
+   "ipykernel",
+   "-f",
+   "{connection_file}"
+ ],
+ "display_name": "Python 3 (Singularity)"
+}

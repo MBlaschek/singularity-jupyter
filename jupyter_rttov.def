@@ -1,0 +1,234 @@
+BootStrap: localimage
+From: jupyter23.sif
+
+
+%help
+	    Run a jupyter notebook Server in a container
+	    Usually: http://localhost:8888
+	    Anaconda Python 3 and ECMWF eccodes (v2.10, py2/3) + cfgrib (py3)
+    	Run RTTOV inside a container
+        Download Rttov from
+        https://www.nwpsaf.eu/site/software/rttov/download/#Software
+
+
+%labels
+	    Author: M. Blaschek
+	    Version: 0.5
+
+%setup
+        mkdir -p ${SINGULARITY_ROOTFS}/rttov
+        mkdir -p ${SINGULARITY_ROOTFS}/rtcoef
+        mkdir -p ${SINGULARITY_ROOTFS}/rtdoc
+
+%files
+        # DOC
+        ../rttov-wrapper-python.pdf /rtdoc/RTTOV_Python_wrapper.pdf
+        ../users_guide_rttov12_v1.2.pdf /rtdoc/RTTOV_User_guide_v12_v1.2.pdf
+        ../rttov_gui_v12.pdf /rtdoc/RTTOV_gui_v12.pdf
+        # SRC
+        ../rttov122.tar.gz /rttov/rttov122.tar.gz
+        rttov/Makefile.local /rttov/Makefile.local
+        rttov/gfortran-anaconda /rttov/gfortran-anaconda
+
+%apprun rthelp
+        echo "RTTOV User guide and Python wrapper"
+        echo "Supply execute as Argument to copy to ./rtdoc"
+        echo "$@" | grep execute > /dev/null
+        if [ $? -eq 0 ]; then
+            mkdir -vp ./rtdoc
+            cp -ruv /rtdoc/* ./rtdoc/
+        fi
+
+%apprun rtcoef
+        echo "Download RTTOV coefficient files to your host"
+        [ -z "$SINGULARITY_BIND" ] && echo "Bind /rtcoef to the container (RW) \n BASH ENV e.g.:    export SINGULARITY_BIND=\"${PWD}/rtcoef:/rtcoef\"" 
+        echo "Supply execute as argument to run rttov_coef_download.sh"
+        echo "$@" | grep execute > /dev/null
+        if [ $? -eq 0 ]; then
+            mkdir -vp ./rtcoef
+            cp -nruv /rttov/rtcoef_backup/* ./rtcoef
+            cd ./rtcoef
+            # comment out directory check 
+            sed -i '159,174 {s/^/#/}' rttov_coef_download.sh
+            exec ./rttov_coef_download.sh
+        fi
+
+%apprun rttest
+        echo "Running the test suite"
+        cat <<EOF
+        Options:
+		        : Default (no options) runs test_rttov12.sh
+	        fwd  	: forward model
+	        hires	: hires IR sounders
+	        solar	: visible/near-IR solar
+	        multi	: multiple instruments together
+	        pc	: principal components
+	        htfrtc	: HTFRTC
+EOF
+        [ -z "$SINGULARITY_BIND" ] && echo "Bind /rtcoef to the container \n e.g.:    export SINGULARITY_BIND=\"${PWD}/rtcoef:/rtcoef\""
+        [ -z "$SINGULARITY_BIND" ] || echo "Found Bind: $SINGULARITY_BIND"
+        mkdir -p /tmp/rttest
+        cd /tmp/rttest
+        cp -urf /rttov/rttov_test . && echo "Tests copied to /tmp/rttest"
+        ln -fvs /rtcoef rtcoef_rttov${RTTOV_VERSION} && echo "Coefficients linked"
+        cd rttov_test
+        echo
+        echo "#####################################################"
+        echo "Testting: "
+        echo "$@" | grep fwd > /dev/null
+        if [ $? -eq 0 ]; then
+            ./test_fwd.sh ARCH=gfortran-anaconda BIN=../../usr/local/bin
+        fi
+        echo "$@" | grep hires > /dev/null
+        if [ $? -eq 0 ]; then
+            ./test_rttov12_hires.sh ARCH=gfortran-anaconda BIN=../../usr/local/bin
+        fi
+
+        echo "$@" | grep solar > /dev/null
+        if [ $? -eq 0 ]; then
+            ./test_solar.sh ARCH=gfortran-anaconda BIN=../../usr/local/bin
+        fi
+        echo "$@" | grep multi > /dev/null
+        if [ $? -eq 0 ]; then
+            ./test_multi_instrument.sh ARCH=gfortran-anaconda BIN=../../usr/local/bin
+        fi
+        echo "$@" | grep pc > /dev/null
+        if [ $? -eq 0 ]; then
+            ./test_pc.sh ARCH=gfortran-anaconda BIN=../../usr/local/bin
+        fi
+        if [ $# -eq 0 ]; then
+            ./test_rttov12.sh ARCH=gfortran-anaconda BIN=../../usr/local/bin
+        fi
+
+        echo "rttest used /tmp/rttest"
+        echo "Finished"
+
+%apprun rtgui
+        echo "Running the Rttov Gui"
+        cd /rttov/gui
+        # Required by GUI
+        export cmdpython=/opt/conda/envs/py2/bin/python
+        exec ./rttovgui
+
+%post    
+	    # Additonal
+	    apt-get update
+        # gfortran
+	    apt-get install -y --no-install-recommends git build-essential cmake autotools-dev autoconf doxygen graphviz
+        # install gfortran from anaconda
+        /opt/conda/bin/conda install gfortran_linux-64 sphinx -y
+        # conda install libgfortran -y
+        # need netcdf.mod
+        /opt/conda/bin/conda install -c conda-forge netcdf-fortran -y
+	    # Clean
+	    apt-get autoremove -y
+	    apt-get clean
+	    
+	    # required for CMAKE
+	    export PATH=/opt/conda/bin:$PATH
+	    export LD_LIBRARY_PATH=/opt/conda/lib:$LD_LIBRARY_PATH
+        export RTTOV_VERSION=12
+
+        #
+        # Compile
+        # 
+	    cd /rttov
+        tar -xzf rttov*.tar.gz
+        #
+        # Potentiall add bug fixes tar's here end overwrite
+        #
+        
+        #
+        # Copy Makefile.local (HDF, Netcdf libs from Conda)
+        #
+        mv Makefile.local ./build
+        mv gfortran-anaconda ./build/arch
+        #
+        # Compile using conda gfortran + hdf, netcdf, f2py
+        #
+        cd src/
+        ../build/Makefile.PL RTTOV_HDF=1 RTTOV_F2PY=1 RTTOV_USER_LAPACK=0
+        make ARCH=gfortran-anaconda INSTALLDIR=../usr/local
+        #
+        # Backup std coef-files and make links
+        # Host can bind coef-files to container (/rtcoef)
+        #
+        cd ..
+        mv rtcoef_rttov${RTTOV_VERSION} rtcoef_backup
+        rm -rf rtcoef_rttov*
+        ln -s /rtcoef/ rtcoef_rttov${RTTOV_VERSION}
+        cp -rfv rtcoef_backup/* /rtcoef
+        #
+        # Fix links of F2py libs
+        #
+        cd wrapper
+        ln -sf /usr/local/lib/rttov_wrapper_f2py.so .
+        cd ../gui
+        ln -sf /usr/local/lib/rttov_gui_f2py.so .
+        cd ..
+        #
+        # Python Wrapper
+        #
+        cd wrapper
+        #
+        # make library accessable from python
+        #
+        echo "/rttov/wrapper" > /opt/conda/lib/python3.7/site-packages/rttov.pth
+        #
+        # Documentation of Python Interface
+        #
+        doxygen doxygen_config_wrapper
+        mv doxygen_doc_wrapper/html /rtdoc/wrapper
+        cd pyrttov_doc
+        make html
+        mv _build/html /rtdoc/pyrttov
+        cd ..
+        mkdir -p /rtdoc/pyexamples
+        cp *.py /rtdoc/pyexamples/
+        cd ..
+        mv *.pdf /rtdoc
+        #
+        # Gui (requires py2 and wxpython)
+        # recompile with Python2
+        #
+        /opt/conda/bin/conda install -n py2 wxpython=3.0 h5py matplotlib scipy numpy -y
+        # x11 windows for wxpython
+        apt install -y --no-install-recommends libgtk2.0 
+        # recompile
+        cd src
+        rm -v /usr/local/lib/rttov_gui_f2py.so
+        # change PATH, LD for python 2
+        oldPATH=$PATH
+        oldLD=$LD_LIBRARY_PATH
+        export PATH=/opt/conda/envs/py2/bin:$PATH
+        export LD_LIBRARY_PATH=/opt/conda/envs/py2/lib:$LD_LIBRARY_PATH
+        make ARCH=gfortran-anaconda INSTALLDIR=../usr/local
+        #
+        # fix link
+        #
+        cp -v ../tmp-gfortran-anaconda/gui/rttov_gui_f2py.so /usr/local/lib
+        cd ..
+	    # Clean
+	    apt-get autoremove -y
+	    apt-get clean
+
+%environment
+	    # important part otherwise the server will try to access /run/user and fail
+	    export JUPYTER_RUNTIME_DIR=$PWD/.runtime
+	    # Make sure we use container kernels
+	    export JUPYTER_DATA_DIR=$PWD/.kernels
+	    # Development
+        export PATH=/opt/conda/bin:$PATH
+	    export LD_LIBRARY_PATH=/opt/conda/lib:/usr/local/lib:$LD_LIBRARY_PATH
+        # RTTOV Options
+        export RTTOV_VERSION=12
+        export OMP_STACKSIZE=1000M
+        export RTTOV_DIR=/rttov
+        export RTTOV_COEF=/rtcoef
+        # GUI options
+        export RTTOV_GUI_PREFIX=/rttov/gui
+        export RTTOV_GUI_EMISS_DIR=${RTTOV_GUI_PREFIX}/../
+        export RTTOV_GUI_COEFF_DIR=${RTTOV_GUI_PREFIX}/../rtcoef_rttov${RTTOV_VERSION}
+        export RTTOV_GUI_PROFILE_DIR=${RTTOV_GUI_PREFIX}/../rttov_test/profile-datasets-hdf
+
+
