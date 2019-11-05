@@ -1,18 +1,16 @@
 BootStrap: localimage
-From: centos610.sif
-
+From: centos610
 
 %help
+	Container Centos 6.10 (docker)
+	Glibc: 2.12-1.212.el6.x86_64
+	Installed: wget, git, curl, bzip2 ca-certificates
 
 	Run a jupyter notebook Server in a container
 	Usually: http://localhost:8888
 	Anaconda Python 3
-
-%labels
-
-	Author: M. Blaschek
-	version: 0.5
-
+	When using Virtualbox supply: --ip=0.0.0.0 to notebook
+	
 %files
 	run.sh /usr/bin
 
@@ -21,12 +19,13 @@ From: centos610.sif
 
 %apprun notebook
 	echo "Notebook..."
+	echo "Arguments are passed to jupyter!"
 	echo "Token: super-secret"
 	echo "$(/opt/conda/bin/jupyter --paths)"
-	exec /opt/conda/bin/jupyter notebook --NotebookApp.allow_origin="*" --no-browser --NotebookApp.token='super-secret' $@
+	echo "Check .jupyter3.log for Debug Infos"
+	nohup /opt/conda/bin/jupyter notebook --NotebookApp.allow_origin="*" --no-browser --NotebookApp.token='super-secret' $@ 2>&1 >> .jupyter3.log &
 	
 %post
-	export PATH=/opt/conda/bin:$PATH
 	wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-4.5.11-Linux-x86_64.sh -O ~/miniconda.sh && \
 	/bin/bash ~/miniconda.sh -b -p /opt/conda && \
 	rm ~/miniconda.sh && \
@@ -36,6 +35,7 @@ From: centos610.sif
 	echo "conda activate base" >> ~/.bashrc
 	# Install jupyter notebook
 	/opt/conda/bin/conda install jupyter numpy matplotlib pandas -y --quiet 
+	/opt/conda/bin/conda clean -a -y
 	# rename Container Kernel:
 	sed -i 's/Python 3/Py3-Sy/' /opt/conda/share/jupyter/kernels/python3/kernel.json
 	yum clean all

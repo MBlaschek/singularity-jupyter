@@ -1,20 +1,20 @@
 # Local centos 6.10 image
 Bootstrap: localimage
-From: centos610.sif
+From: centos610
 # most recent and debian image
 # BootStrap: docker
 # From: continuumio/miniconda3
 
 %help
-	Run a jupyter notebook-server/shell in a container
+	Container Centos 6.10 (docker)
+	Glibc: 2.12-1.212.el6.x86_64
+	Installed: wget, git, curl, bzip2 ca-certificates
+
+	Run a jupyter notebook Server in a container
 	Usually: http://localhost:8888
-	Anaconda Python 3 (plus kernel 2.7) and jupyter
-
-%labels
-	Author: M. Blaschek
-	version: 0.5
-	Date: 14.2.2019
-
+	Anaconda Python 3 (plus 2.7)
+	When using Virtualbox supply: --ip=0.0.0.0 to notebook
+	
 %files
 	run.sh /usr/bin
 
@@ -53,7 +53,7 @@ From: centos610.sif
 	/opt/conda/envs/py2/bin/python -m ipykernel install
 	sed -i 's/Python 3/Py3-Sy/' /opt/conda/share/jupyter/kernels/python3/kernel.json
 	sed -i 's/Python 2/Py2-Sy/' /usr/local/share/jupyter/kernels/python2/kernel.json
-	 
+	/opt/conda/bin/conda clean -a -y
 	# Clean
 	yum clean all
  
