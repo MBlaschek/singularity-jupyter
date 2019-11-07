@@ -1,0 +1,14 @@
+FC=/opt/conda/bin/x86_64-conda_cos6-linux-gnu-gfortran.bin
+FC77=/opt/conda/bin/x86_64-conda_cos6-linux-gnu-gfortran.bin
+CC=/opt/conda/bin/x86_64-conda_cos6-linux-gnu-gcc
+LDFLAGS_ARCH=-L/opt/conda/lib
+CFLAGS_ARCH=
+FFLAGS_ARCH=-fPIC -O3 -ffree-line-length-none
+AR=ar r
+
+F2PY=f2py --fcompiler=gnu95 --f77exec=/opt/conda/bin/x86_64-conda_cos6-linux-gnu-gfortran.bin --f90exec=/opt/conda/bin/x86_64-conda_cos6-linux-gnu-gfortran.bin
+F2PYFLAGS_ARCH="-fPIC"
+F2PYLDFLAGS_ARCH=-L/opt/conda/lib
+
+FFLAGS_ARCH_lapack=-fPIC -O3
+FFLAGS_ARCH_rttov789_opencoeff=-fPIC -ffree-line-length-none

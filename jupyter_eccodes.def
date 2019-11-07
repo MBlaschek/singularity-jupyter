@@ -3,15 +3,14 @@ From: jupyter23
 
 
 %help
+	Container Centos 6.10 (docker)
+	Glibc: 2.12-1.212.el6.x86_64
+	Installed: wget, git, curl, bzip2 ca-certificates
+	
 	Run a jupyter notebook-server/shell in a container
 	Usually: http://localhost:8888
-	Anaconda Python 3 (plus kernel 2.7) and jupyter
+	Anaconda Python 3 (plus kernel 2.7)
 	ECMWF eccodes (v2.10, py2/3) + cfgrib (py3)
-
-%labels
-	Author: M. Blaschek
-	Version: 0.6
-	Date: 15.02.2019
 
 %post    
 	# Install jupyter notebook

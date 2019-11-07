@@ -17,7 +17,8 @@ From: jupyter3
 	
 %post
 	# Install packages and Eccodes
-	/opt/conda/bin/conda install xarray bottleneck dask -y --quiet 
+	/opt/conda/bin/conda install xarray bottleneck dask scipy netCDF4 cartopy -y --quiet 
+	/opt/conda/bin/pip install h5netcdf
 	/opt/conda/bin/conda install -c conda-forge -y cfgrib eccodes
 	/opt/conda/bin/conda clean -a -y
 	
