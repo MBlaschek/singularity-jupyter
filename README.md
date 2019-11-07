@@ -138,3 +138,8 @@ To register your container, in the `${HOME}/.local/share/jupyter/kernels` create
 
 ```
 where adding the `-B /run/user:/run/user` option is important, which allows the container to have access.
+
+
+# R-Studio Server
+This is a lightly modified version of what [nickjer](https://github.com/nickjer/singularity-rstudio) has done. The Modifications allow to run the R-Studio server as an instance.
+
