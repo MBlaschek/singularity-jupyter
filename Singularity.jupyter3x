@@ -1,5 +1,8 @@
-BootStrap: localimage
-From: jupyter3
+# BootStrap: localimage
+# From: jupyter3
+Bootstrap: shub
+From: shub://MBlaschek/singularity-jupyter:jupyter3
+
 
 %help
 	Container Centos 6.10 (docker)
