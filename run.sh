@@ -7,18 +7,22 @@
 #
 usage(){
     echo "Singularity Container"
-	if [[ -f /etc/os-release ]]; then
-		echo $(grep PRETTY_NAME= /etc/os-release | sed 's/PRETTY_NAME=//')
-	elif [[ -f /etc/centos-release ]]; then
-		echo $(cat /etc/centos-release)
+	if [[ -f /.singularity.d/runscript.help ]]; then
+		cat /.singularity.d/runscript.help
 	else
-		echo $(uname -a)
+		if [[ -f /etc/os-release ]]; then
+			echo $(grep PRETTY_NAME= /etc/os-release | sed 's/PRETTY_NAME=//')
+		elif [[ -f /etc/centos-release ]]; then
+			echo $(cat /etc/centos-release)
+		else
+			echo $(uname -a)
+		fi
 	fi
-	
 	if [[ -d /scif/apps ]]; then
 		echo "SCIF (Apps): " $(ls /scif/apps)
 	fi
 	print_json
+
 }
 
 print_json(){
@@ -35,6 +39,10 @@ EOF
 }
 
 if [ $# -gt 0 ]; then
+	if [[ "$1" == "--help" ]] || [[ "$1" == "-h" ]]; then
+		usage
+		exit
+	fi
 	if [[ -d /scif/apps ]]; then
 		echo $(ls /scif/apps) | grep $1 > /dev/null
 		if [ $? -eq 0 ]; then

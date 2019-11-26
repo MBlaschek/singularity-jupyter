@@ -11,3 +11,9 @@ jupyter3: centos610
 
 jupyter3x: jupyter3
 	sudo singularity build --force --notest jupyter3x jupyter3x.def
+	
+rstudio: rstudio
+	sudo singularity build --force rstudio r-studio-server.def
+
+rbase: rbase
+	sudo singularity build --force rbase r-base.def
