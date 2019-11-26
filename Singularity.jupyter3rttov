@@ -1,7 +1,7 @@
 # BootStrap: localimage
 # From: jupyter23
 Bootstrap: shub
-From: shub://MBlaschek/singularity-jupyter:jupyter23
+From: MBlaschek/singularity-jupyter:jupyter23
 
 
 %help

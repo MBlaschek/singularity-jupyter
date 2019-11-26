@@ -1,7 +1,7 @@
 #BootStrap: localimage
 #From: centos610
 Bootstrap: shub
-From: shub://MBlaschek/singularity-jupyter:centos
+From: MBlaschek/singularity-jupyter:centos
 
 %help
 	Container Centos 6.10 (docker)

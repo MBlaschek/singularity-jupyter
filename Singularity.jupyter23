@@ -2,7 +2,7 @@
 # Bootstrap: localimage
 # From: centos610
 Bootstrap: shub
-From: shub://MBlaschek/singularity-jupyter:centos
+From: MBlaschek/singularity-jupyter:centos
 # most recent and debian image
 # BootStrap: docker
 # From: continuumio/miniconda3
