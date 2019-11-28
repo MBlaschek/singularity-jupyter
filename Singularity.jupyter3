@@ -26,6 +26,12 @@ From: MBlaschek/singularity-jupyter:centos
 	echo "$(/opt/conda/bin/jupyter --paths)"
 	echo "Check .jupyter3.log for Debug Infos"
 	nohup /opt/conda/bin/jupyter notebook --NotebookApp.allow_origin="*" --no-browser --NotebookApp.token='super-secret' $@ 2>&1 >> .jupyter3.log &
+	echo "Goto: $(cat .jupyter3.log | grep ' http://localhost' | cut -d' ' -f 4)"
+	
+%startscript
+	# This is executed when instances are started
+  	nohup /opt/conda/bin/jupyter notebook --NotebookApp.allow_origin="*" --no-browser --NotebookApp.token='super-secret' $@ 2>&1 >> .jupyter3.log &
+	echo "Goto: $(cat .jupyter3.log | grep ' http://localhost' | cut -d' ' -f 4)"
 	
 %post
 	wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-4.5.11-Linux-x86_64.sh -O ~/miniconda.sh && \
