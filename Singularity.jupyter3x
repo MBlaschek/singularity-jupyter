@@ -15,8 +15,8 @@ From: MBlaschek/singularity-jupyter:jupyter3
 	Eccodes and CFgrib are Software from ECMWF
 	When using Virtualbox supply: --ip=0.0.0.0 to notebook
 	
-%test
-	python -m cfgrib selfcheck
+# %test
+# 	/opt/conda/bin/python -m cfgrib selfcheck
 	
 %post
 	# Install packages and Eccodes
