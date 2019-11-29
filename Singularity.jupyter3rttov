@@ -8,17 +8,17 @@ From: MBlaschek/singularity-jupyter:jupyter23
 	Container Centos 6.10 (docker)
 	Glibc: 2.12-1.212.el6.x86_64
 	Installed: wget, git, curl, bzip2 ca-certificates
-	
+
 	Run a jupyter notebook Server in a container
 	Usually: http://localhost:8888
 	Anaconda Python 3 (plus 2.7)
 	When using Virtualbox supply: --ip=0.0.0.0 to notebook
-	
+
 	Run RTTOV 12.3 inside a container
-	Download Rttov from 
+	Download Rttov from
 	https://www.nwpsaf.eu/site/software/rttov/download/#Software
-	into rttov directory 
-	
+	into rttov directory
+
 %setup
 	mkdir -p ${SINGULARITY_ROOTFS}/rttov
 	mkdir -p ${SINGULARITY_ROOTFS}/rtcoef
@@ -34,7 +34,7 @@ From: MBlaschek/singularity-jupyter:jupyter23
 	# rttov/rttov123.tar.gz /rttov/rttov123.tar.gz
 	rttov/Makefile.local /rttov/Makefile.local
 	rttov/gfortran-anaconda /rttov/gfortran-anaconda
-	
+
 	run.sh /usr/bin
 
 %apprun rthelp
@@ -48,14 +48,14 @@ From: MBlaschek/singularity-jupyter:jupyter23
 
 %apprun rtcoef
 	echo "Download RTTOV coefficient files to your host"
-	[ -z "$SINGULARITY_BIND" ] && echo "Bind /rtcoef to the container (RW) \n BASH ENV e.g.:    export SINGULARITY_BIND=\"${PWD}/rtcoef:/rtcoef\"" 
+	[ -z "$SINGULARITY_BIND" ] && echo "Bind /rtcoef to the container (RW) \n BASH ENV e.g.:    export SINGULARITY_BIND=\"${PWD}/rtcoef:/rtcoef\""
 	echo "Supply execute as argument to run rttov_coef_download.sh"
 	echo "$@" | grep execute > /dev/null
 	if [ $? -eq 0 ]; then
 		mkdir -vp ./rtcoef
 		cp -nruv /rttov/rtcoef_backup/* ./rtcoef
 		cd ./rtcoef
-		# comment out directory check 
+		# comment out directory check
 		sed -i '159,174 {s/^/#/}' rttov_coef_download.sh
 		exec ./rttov_coef_download.sh
 	fi
@@ -120,27 +120,26 @@ EOF
 %runscript
 	exec /usr/bin/run.sh "$@"
 
-%post    
+%post
 	# Additonal
-	apt-get update
+	yum check-update && yum -y update
 	# gfortran
-	apt-get install -y --no-install-recommends git build-essential cmake autotools-dev autoconf doxygen graphviz
+	yum install -y build-essential cmake autotools-dev autoconf doxygen graphviz
 	# install gfortran from anaconda
 	/opt/conda/bin/conda install gfortran_linux-64 sphinx -y
 	# conda install libgfortran -y
 	# need netcdf.mod
 	/opt/conda/bin/conda install -c conda-forge netcdf-fortran -y
 	# Clean
-	apt-get autoremove -y
-	apt-get clean
-	   
+	yum clean all
+
 	# required for CMAKE
 	export PATH=/opt/conda/bin:$PATH
 	export LD_LIBRARY_PATH=/opt/conda/lib:$LD_LIBRARY_PATH
 	export RTTOV_VERSION=12
 	#
 	# Compile
-	# 
+	#
 	cd /rttov
 	if [ ! -e rttov123.tar.gz ]; then
 	    wget ftp://srvx1.img.univie.ac.at/pub/upload/mblaschek/rttov123.tar.gz
@@ -149,7 +148,7 @@ EOF
 	#
 	# Potentiall add bug fixes tar's here end overwrite
 	#
-	
+
 	#
 	# Copy Makefile.local (HDF, Netcdf libs from Conda)
 	#
@@ -205,7 +204,7 @@ EOF
 	#
 	/opt/conda/bin/conda install -n py2 wxpython=3.0 h5py matplotlib scipy numpy -y
 	# x11 windows for wxpython
-	apt install -y --no-install-recommends libgtk2.0 
+	yum install -y libgtk2.0
 	# recompile
 	cd src
 	rm -v /usr/local/lib/rttov_gui_f2py.so
@@ -221,8 +220,7 @@ EOF
 	cp -v ../tmp-gfortran-anaconda/gui/rttov_gui_f2py.so /usr/local/lib
 	cd ..
 	# Clean
-	apt-get autoremove -y
-	apt-get clean
+	yum clean all
 
 %environment
 	# important part otherwise the server will try to access /run/user and fail
