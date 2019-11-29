@@ -208,7 +208,8 @@ EOF
 	# need to change Library path because yum needs system libs
 	oldLD=$LD_LIBRARY_PATH
 	export LD_LIBRARY_PATH=/usr/lib64:/usr/lib:$LD_LIBRARY_PATH
-	yum install -y libgtk2.0
+	# apt install -y libgtk2.0
+	yum install -y gtk2-devel
 	export LD_LIBRARY_PATH=$oldLD
 	# recompile
 	cd src
