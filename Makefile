@@ -1,19 +1,16 @@
 all: centos610
 
-centos610: 
-	sudo singularity build centos610 centos.def
+centos610:
+	sudo singularity build centos Singularity.centos
 
-jupyter23: centos610
-	sudo singularity build --force jupyter23 jupyter23.def
+jupyter23: centos
+	sudo singularity build --force jupyter23 Singularity.jupyter23
 
-jupyter3: centos610
-	sudo singularity build --force jupyter3 jupyter3.def
+jupyter3: centos
+	sudo singularity build --force jupyter3 Singularity.jupyter3
 
 jupyter3x: jupyter3
-	sudo singularity build --force --notest jupyter3x jupyter3x.def
-	
-rstudio: rstudio
-	sudo singularity build --force rstudio r-studio-server.def
+	sudo singularity build --force --notest jupyter3x Singularity.jupyter3x
 
-rbase: rbase
-	sudo singularity build --force rbase r-base.def
+rstudio: rstudio
+	sudo singularity build --force rstudio Singularity.rstudio

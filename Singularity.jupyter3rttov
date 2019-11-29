@@ -203,7 +203,7 @@ EOF
 	# Gui (requires py2 and wxpython)
 	# recompile with Python2
 	#
-	/opt/conda/bin/conda install -n py2 wxpython=3.0 h5py matplotlib scipy numpy -y
+	/opt/conda/bin/conda install -n py2 -c anaconda wxpython=3.0 h5py matplotlib scipy numpy -y
 	# x11 windows for wxpython
 	yum install -y libgtk2.0
 	# recompile
