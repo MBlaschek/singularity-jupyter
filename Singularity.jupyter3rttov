@@ -205,13 +205,15 @@ EOF
 	#
 	/opt/conda/bin/conda install -n py2 -c anaconda wxpython=3.0 h5py matplotlib scipy numpy -y
 	# x11 windows for wxpython
+	# need to change Library path because yum needs system libs
+	oldLD=$LD_LIBRARY_PATH
+	export LD_LIBRARY_PATH=/usr/lib64:/usr/lib:$LD_LIBRARY_PATH
 	yum install -y libgtk2.0
+	export LD_LIBRARY_PATH=$oldLD
 	# recompile
 	cd src
 	rm -v /usr/local/lib/rttov_gui_f2py.so
 	# change PATH, LD for python 2
-	oldPATH=$PATH
-	oldLD=$LD_LIBRARY_PATH
 	export PATH=/opt/conda/envs/py2/bin:$PATH
 	export LD_LIBRARY_PATH=/opt/conda/envs/py2/lib:$LD_LIBRARY_PATH
 	make ARCH=gfortran-anaconda INSTALLDIR=../usr/local
@@ -221,7 +223,7 @@ EOF
 	cp -v ../tmp-gfortran-anaconda/gui/rttov_gui_f2py.so /usr/local/lib
 	cd ..
 	# Clean
-	yum clean all
+	/opt/conda/bin/conda clean -a -y
 
 %environment
 	# important part otherwise the server will try to access /run/user and fail
