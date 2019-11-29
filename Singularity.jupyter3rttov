@@ -14,10 +14,11 @@ From: MBlaschek/singularity-jupyter:jupyter23
 	Anaconda Python 3 (plus 2.7)
 	When using Virtualbox supply: --ip=0.0.0.0 to notebook
 	
-	Run RTTOV inside a container
+	Run RTTOV 12.3 inside a container
 	Download Rttov from 
 	https://www.nwpsaf.eu/site/software/rttov/download/#Software
-
+	into rttov directory 
+	
 %setup
 	mkdir -p ${SINGULARITY_ROOTFS}/rttov
 	mkdir -p ${SINGULARITY_ROOTFS}/rtcoef
@@ -26,10 +27,11 @@ From: MBlaschek/singularity-jupyter:jupyter23
 %files
 	# DOC
 	rttov/rttov-wrapper-python.pdf /rtdoc/RTTOV_Python_wrapper.pdf
-	rttov/users_guide_rttov12_v1.2.pdf /rtdoc/RTTOV_User_guide_v12_v1.2.pdf
+	rttov/users_guide_rttov12_v1.3.pdf /rtdoc/RTTOV_User_guide_v12_v1.3.pdf
 	rttov/rttov_gui_v12.pdf /rtdoc/RTTOV_gui_v12.pdf
 	# SRC
-	rttov/rttov122.tar.gz /rttov/rttov122.tar.gz
+	# RTTOV Source is not available like this
+	# rttov/rttov123.tar.gz /rttov/rttov123.tar.gz
 	rttov/Makefile.local /rttov/Makefile.local
 	rttov/gfortran-anaconda /rttov/gfortran-anaconda
 	
@@ -140,6 +142,9 @@ EOF
 	# Compile
 	# 
 	cd /rttov
+	if [ ! -e rttov123.tar.gz ]; then
+	    wget ftp://srvx1.img.univie.ac.at/pub/upload/mblaschek/rttov123.tar.gz
+	fi
 	tar -xzf rttov*.tar.gz
 	#
 	# Potentiall add bug fixes tar's here end overwrite
