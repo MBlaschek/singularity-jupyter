@@ -124,7 +124,8 @@ EOF
 	# Additonal
 	yum check-update && yum -y update
 	# gfortran
-	yum install -y build-essential cmake autotools-dev autoconf doxygen graphviz
+	yum groupinstall -y "Development Tools"
+	yum install -y cmake doxygen graphviz
 	# install gfortran from anaconda
 	/opt/conda/bin/conda install gfortran_linux-64 sphinx -y
 	# conda install libgfortran -y
