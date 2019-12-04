@@ -39,7 +39,7 @@ SPECIES JEDI
     #
     # Modify config
     #
-    cat config/container-gnu-openmpi-dev.sh | sed 's/export        STACK_BUILD_JASPER=N/export        STACK_BUILD_JASPER=Y/g' > config/container-gnu-openmpi-dev2.sh
+    cat config/container-gnu-openmpi-dev.sh | sed 's/export        STACK_BUILD_JASPER=N/export        STACK_BUILD_JASPER=Y/g' > config/config_container-gnu-openmpi-dev2.sh
     #
     # Build
     #
