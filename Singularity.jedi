@@ -18,7 +18,7 @@ SPECIES JEDI
     export NETCDF=/usr/local
     export PNETCDF=/usr/local
     export HDF5_ROOT=/usr/local
-    exprt PIO=/usr/local
+    export PIO=/usr/local
     export BOOST_ROOT=/usr/local
     export EIGEN3_INCLUDE_DIR=/usr/local
     export LAPACK_PATH=/usr/local
@@ -39,7 +39,7 @@ SPECIES JEDI
     #
     # Modify config
     #
-    cat config/container-gnu-openmpi-dev.sh | sed 's/export        STACK_BUILD_JASPER=N/export        STACK_BUILD_JASPER=Y/g' > config/config_container-gnu-openmpi-dev2.sh
+    cat config/config_container-gnu-openmpi-dev.sh | sed 's/export        STACK_BUILD_JASPER=N/export        STACK_BUILD_JASPER=Y/g' > config/config_container-gnu-openmpi-dev2.sh
     #
     # Build
     #
