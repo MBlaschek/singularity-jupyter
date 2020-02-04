@@ -54,7 +54,7 @@ From: MBlaschek/singularity-jupyter:centos
 	# Install jupyter notebook
 	/opt/conda/bin/conda install jupyter jupyterlab numpy matplotlib pandas xarray bottleneck dask numba scipy netcdf4 cartopy -y --quiet 
 	/opt/conda/bin/pip install h5netcdf
-	/opt/conda/bin/conda install -c conda-forge -y cfgrib eccodes
+	/opt/conda/bin/conda install -c conda-forge -y cfgrib eccodes nodejs
 	/opt/conda/bin/conda clean -a -y
 	# rename Container Kernel:
 	sed -i 's/Python 3/Sy3/' /opt/conda/share/jupyter/kernels/python3/kernel.json
@@ -68,4 +68,5 @@ From: MBlaschek/singularity-jupyter:centos
 	# make sure we use container kernels, otherwise this will be overwritten 
 	# by $HOME/.local/share/jupyter/kernels
 	export JUPYTER_DATA_DIR=$PWD/.kernels
+	export JUPYTERLAB_DIR=$PWD/.lab
 
