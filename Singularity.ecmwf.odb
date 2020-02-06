@@ -1,0 +1,24 @@
+BootStrap: docker
+From: ubuntu:16.04
+
+%files
+    odb_api_bundle-0.18.1-Source.tar.gz /opt
+
+%runscript
+	echo "$@"
+    exec $@
+	
+%post
+	apt-get -y update
+	apt-get -y install git build-essential gfortran cmake autotools-dev autoconf libnetcdf*
+    # libboost-all-dev bison flex
+    #cd /opt
+    #tar -xzf  odb_api-*-Source.tar.gz
+    #mkdir build ; cd build
+ 
+    #cmake ../odb_api*
+
+    #make
+    #ctest
+    #make install
+    

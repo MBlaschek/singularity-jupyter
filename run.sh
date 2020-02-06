@@ -21,28 +21,32 @@ usage(){
 	if [[ -d /scif/apps ]]; then
 		echo "SCIF (Apps): " $(ls /scif/apps)
 	fi
-	print_json
-
 }
 
-print_json(){
+infos(){
 	if [[ -f /.singularity.d/labels.json ]]; then
 		python <<EOF
-import json 
+import json
 data=json.loads(open('/.singularity.d/labels.json').read())
 n=max(map(len, data.keys()))
-format='%'+str(n)+'s : %s'
-for i in sorted(data.keys()): 
+format='%-'+str(n)+'s : %s'
+for i in sorted(data.keys()):
 	print(format % (i,data[i]))
 EOF
 	fi
 }
+
 
 if [ $# -gt 0 ]; then
 	if [[ "$1" == "--help" ]] || [[ "$1" == "-h" ]]; then
 		usage
 		exit
 	fi
+	if [[ "$1" == "--info" ]]; then
+		infos
+		exit
+	fi
+
 	if [[ -d /scif/apps ]]; then
 		echo $(ls /scif/apps) | grep $1 > /dev/null
 		if [ $? -eq 0 ]; then

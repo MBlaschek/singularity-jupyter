@@ -1,12 +1,12 @@
-all: centos610
+all: centos
 
-centos610:
+centos:
 	sudo singularity build centos Singularity.centos
 
-jupyter23: centos610
+jupyter23: centos
 	sudo singularity build --force jupyter23 Singularity.jupyter23
 
-jupyter3: centos610
+jupyter3: centos
 	sudo singularity build --force jupyter3 Singularity.jupyter3
 
 jupyter3x: jupyter3

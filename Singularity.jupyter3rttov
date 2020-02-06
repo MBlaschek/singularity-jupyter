@@ -5,19 +5,28 @@ From: MBlaschek/singularity-jupyter:jupyter23
 
 
 %help
-	Container Centos 6.10 (docker)
-	Glibc: 2.12-1.212.el6.x86_64
-	Installed: wget, git, curl, bzip2 ca-certificates
+Container Centos 6.10 (docker)
 
-	Run a jupyter notebook Server in a container
-	Usually: http://localhost:8888
-	Anaconda Python 3 (plus 2.7)
-	When using Virtualbox supply: --ip=0.0.0.0 to notebook
+Jupyter Notebook/Lab Server
+Options:
+  --NotebookApp.token='super-secret'  	Token when not using a password
+  --ip=0.0.0.0   						port forwarding from VirtualBox
+  --NotebookApp.base_url='/ipython/'	Directory path
+  --port=????							Server port
 
-	Run RTTOV 12.3 inside a container
-	Download Rttov from
-	https://www.nwpsaf.eu/site/software/rttov/download/#Software
-	into rttov directory
+Create Notebook Password (HOME/.jupyter/jupyter_notebook_config.json):
+	jupyter notebook password
+
+Check Jupyter paths:
+	jupyter --paths
+
+Anaconda Python 3 (Xarray, cfgrib, eccodes)
+Eccodes and CFgrib are Software from ECMWF
+
+Run RTTOV 12.3 inside a container
+Download Rttov from
+https://www.nwpsaf.eu/site/software/rttov/download/#Software
+into rttov directory
 
 %setup
 	mkdir -p ${SINGULARITY_ROOTFS}/rttov
@@ -63,14 +72,14 @@ From: MBlaschek/singularity-jupyter:jupyter23
 %apprun rttest
 	echo "Running the test suite"
 	cat <<EOF
-	Options:
-			: Default (no options) runs test_rttov12.sh
-		fwd  	: forward model
-		hires	: hires IR sounders
-		solar	: visible/near-IR solar
-		multi	: multiple instruments together
-		pc	: principal components
-		htfrtc	: HTFRTC
+Options:
+		: Default (no options) runs test_rttov12.sh
+	fwd  	: forward model
+	hires	: hires IR sounders
+	solar	: visible/near-IR solar
+	multi	: multiple instruments together
+	pc	: principal components
+	htfrtc	: HTFRTC
 EOF
 	[ -z "$SINGULARITY_BIND" ] && echo "Bind /rtcoef to the container \n e.g.:    export SINGULARITY_BIND=\"${PWD}/rtcoef:/rtcoef\""
 	[ -z "$SINGULARITY_BIND" ] || echo "Found Bind: $SINGULARITY_BIND"
@@ -143,13 +152,18 @@ EOF
 	#
 	cd /rttov
 	if [ ! -e rttov123.tar.gz ]; then
-	    wget ftp://srvx1.img.univie.ac.at/pub/upload/mblaschek/rttov123.tar.gz
+		echo "Error, Download RTTOV https://www.nwpsaf.eu/site/software/rttov/download/#Software"
+		echo "Save into rttov/ directory"
+		exit 1
+	    # wget ftp://srvx1.img.univie.ac.at/pub/upload/mblaschek/rttov123.tar.gz
 	fi
 	tar -xzf rttov*.tar.gz
 	#
 	# Potentiall add bug fixes tar's here end overwrite
 	#
-
+	if false; then
+		echo "No Bug fixes yet"
+	fi
 	#
 	# Copy Makefile.local (HDF, Netcdf libs from Conda)
 	#
@@ -232,7 +246,8 @@ EOF
 	# Make sure we use container kernels
 	export JUPYTER_DATA_DIR=$PWD/.kernels
 	# Development
-
+	export JUPYTERLAB_DIR=$PWD/.lab
+	#
 	export PATH=/opt/conda/bin:$PATH
 	export LD_LIBRARY_PATH=/opt/conda/lib:/usr/local/lib:$LD_LIBRARY_PATH
 	# RTTOV Options
