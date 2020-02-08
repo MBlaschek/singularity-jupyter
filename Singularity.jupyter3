@@ -38,9 +38,10 @@ Eccodes and CFgrib are Software from ECMWF
 
 	echo "$(/opt/conda/bin/jupyter --paths)"
 	echo "Check .jupyter3.log for Debug Infos"
+	echo "PID in .jupyter3.pid"
 	nohup /opt/conda/bin/jupyter notebook --NotebookApp.allow_origin="*" --no-browser $@ 2>&1 >> .jupyter3.log &
-	echo "kill $!" >> .jupyter3.log &
-	sleep 5 && echo "Goto: $(cat .jupyter3.log | grep ' http://localhost' | tail -n1 | cut -d' ' -f 4)"
+	echo "kill $!" > .jupyter3.pid
+	sleep 5 && echo "Goto: $(cat .jupyter3.log | grep '] http' | tail -n1 | cut -d' ' -f 4)"
 
 %apprun lab
 	echo "Lab..."
@@ -51,15 +52,15 @@ Eccodes and CFgrib are Software from ECMWF
 	fi
 	echo "$(/opt/conda/bin/jupyter --paths)"
 	echo "Check .jupyter3.log for Debug Infos"
+	echo "PID in .jupyter3.pid"
 	nohup /opt/conda/bin/jupyter lab --NotebookApp.allow_origin="*" --no-browser $@ 2>&1 >> .jupyter3.log &
-	echo "kill $!" >> .jupyter3.log &
-	sleep 5 && echo "Goto: $(cat .jupyter3.log | grep ' http://localhost' | tail -n1 | cut -d' ' -f 4)"
+	echo "kill $!" > .jupyter3.pid
+	sleep 5 && echo "Goto: $(cat .jupyter3.log | grep '] http' | tail -n1 | cut -d' ' -f 4)"
 
 %startscript
 	# This is executed when instances are started
-  	# echo "Goto: $(cat .jupyter3.log | grep ' http://localhost' | cut -d' ' -f 4)" >> .jupyter3.log
   	nohup /opt/conda/bin/jupyter notebook --NotebookApp.allow_origin="*" --no-browser $@ 2>&1 >> .jupyter3.log &
-  	echo "kill $!" >> .jupyter3.log &
+  	echo "kill $!" > .jupyter3.pid
 
 %post
 	wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-4.5.11-Linux-x86_64.sh -O ~/miniconda.sh && \

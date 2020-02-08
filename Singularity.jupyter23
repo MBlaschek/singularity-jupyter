@@ -40,8 +40,9 @@ Eccodes and CFgrib are Software from ECMWF
 	echo "Arguments are passed to jupyter!"
 	echo "$(/opt/conda/bin/jupyter --paths)"
 	echo "Check .jupyter3.log for Debug Infos"
+	echo "PID in .jupyter3.pid"
 	nohup /opt/conda/bin/jupyter notebook --NotebookApp.allow_origin="*" --no-browser $@ 2>&1 >> .jupyter3.log &
-	echo "kill $!" >> .jupyter3.log &
+	echo "kill $!" > .jupyter3.pid
 	sleep 5 && echo "Goto: $(cat .jupyter3.log | grep ' http://localhost' | tail -n1 | cut -d' ' -f 4)"
 
 %apprun lab
@@ -53,8 +54,9 @@ Eccodes and CFgrib are Software from ECMWF
 	fi
 	echo "$(/opt/conda/bin/jupyter --paths)"
 	echo "Check .jupyter3.log for Debug Infos"
+	echo "PID in .jupyter3.pid"
 	nohup /opt/conda/bin/jupyter lab --NotebookApp.allow_origin="*" --no-browser $@ 2>&1 >> .jupyter3.log &
-	echo "kill $!" >> .jupyter3.log &
+	echo "kill $!" > .jupyter3.pid
 	sleep 5 && echo "Goto: $(cat .jupyter3.log | grep ' http://localhost' | tail -n1 | cut -d' ' -f 4)"
 
 %apprun py2
@@ -63,10 +65,9 @@ Eccodes and CFgrib are Software from ECMWF
 	exec /opt/conda/envs/py2/bin/ipython $@
 
 %startscript
-	# This is executed when instances are started
-  	# echo "Goto: $(cat .jupyter3.log | grep ' http://localhost' | cut -d' ' -f 4)" >> .jupyter3.log
+# This is executed when instances are started
   	nohup /opt/conda/bin/jupyter notebook --NotebookApp.allow_origin="*" --no-browser $@ 2>&1 >> .jupyter3.log &
-  	echo "kill $!" >> .jupyter3.log &
+  	echo "kill $!" > .jupyter3.pid
 
 %post
 	export PATH=/opt/conda/bin:$PATH
@@ -94,7 +95,7 @@ Eccodes and CFgrib are Software from ECMWF
 	rm pandoc*.tar.gz
 	yum install -y texlive-xetex texlive-latex texlive-texmf-fonts texlive-texmf-xetex texlive-texmf-latex
 	# Clean
-	yum clean all
+	yum clean -y all
 
 %environment
 	export PATH=/opt/conda/bin:$PATH
