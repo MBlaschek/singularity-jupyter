@@ -1,10 +1,10 @@
-#BootStrap: localimage
-#From: centos
+# Local centos 6.10 image
+# Bootstrap: localimage
+# From: centos610
 Bootstrap: shub
 From: MBlaschek/singularity-jupyter:centos
 
 %help
-
 Container Centos 6.10 (docker)
 
 Jupyter Notebook/Lab Server
@@ -23,7 +23,7 @@ Check Jupyter paths:
 Check Jupyter Notebook Server running:
 	jupyter notebook list
 
-Anaconda Python 3 (Xarray, cfgrib, eccodes)
+Anaconda Python 2.7 (Xarray, cfgrib, eccodes)
 Eccodes and CFgrib are Software from ECMWF
 
 %files
@@ -35,13 +35,12 @@ Eccodes and CFgrib are Software from ECMWF
 %apprun notebook
 	echo "Notebook..."
 	echo "Arguments are passed to jupyter!"
-
 	echo "$(/opt/conda/bin/jupyter --paths)"
-	echo "Check .jupyter3.log for Debug Infos"
-	echo "PID in .jupyter3.pid"
-	nohup /opt/conda/bin/jupyter notebook --NotebookApp.allow_origin="*" --no-browser $@ 2>&1 >> .jupyter3.log &
-	echo "kill $!" > .jupyter3.pid
-	sleep 5 && echo "Goto: $(cat .jupyter3.log | grep '] http' | tail -n1 | cut -d' ' -f 4)"
+	echo "Check .jupyter2.log for Debug Infos"
+	echo "PID in .jupyter2.pid"
+	nohup /opt/conda/bin/jupyter notebook --NotebookApp.allow_origin="*" --no-browser $@ 2>&1 >> .jupyter2.log &
+	echo "kill $!" > .jupyter2.pid
+	sleep 5 && echo "Goto: $(cat .jupyter2.log | grep '] http' | tail -n1 | cut -d' ' -f 4)"
 
 %apprun lab
 	echo "Lab..."
@@ -51,19 +50,20 @@ Eccodes and CFgrib are Software from ECMWF
 		/opt/conda/bin/jupyter lab build
 	fi
 	echo "$(/opt/conda/bin/jupyter --paths)"
-	echo "Check .jupyter3.log for Debug Infos"
-	echo "PID in .jupyter3.pid"
-	nohup /opt/conda/bin/jupyter lab --NotebookApp.allow_origin="*" --no-browser $@ 2>&1 >> .jupyter3.log &
-	echo "kill $!" > .jupyter3.pid
-	sleep 5 && echo "Goto: $(cat .jupyter3.log | grep '] http' | tail -n1 | cut -d' ' -f 4)"
+	echo "Check .jupyter2.log for Debug Infos"
+	echo "PID in .jupyter2.pid"
+	nohup /opt/conda/bin/jupyter lab --NotebookApp.allow_origin="*" --no-browser $@ 2>&1 >> .jupyter2.log &
+	echo "kill $!" > .jupyter2.pid
+  sleep 5 && echo "Goto: $(cat .jupyter2.log | grep '] http' | tail -n1 | cut -d' ' -f 4)"
 
 %startscript
-	# This is executed when instances are started
-  	nohup /opt/conda/bin/jupyter notebook --NotebookApp.allow_origin="*" --no-browser $@ 2>&1 >> .jupyter3.log &
-  	echo "kill $!" > .jupyter3.pid
+  # This is executed when instances are started
+  nohup /opt/conda/bin/jupyter notebook --NotebookApp.allow_origin="*" --no-browser $@ 2>&1 >> .jupyter2.log &
+  echo "kill $!" > .jupyter2.pid
 
 %post
-	wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh && \
+	export PATH=/opt/conda/bin:$PATH
+	wget --quiet https://repo.anaconda.com/miniconda/Miniconda2-latest-Linux-x86_64.sh -O ~/miniconda.sh && \
 	/bin/bash ~/miniconda.sh -b -p /opt/conda && \
 	rm ~/miniconda.sh && \
 	/opt/conda/bin/conda clean -tipsy && \
@@ -71,19 +71,16 @@ Eccodes and CFgrib are Software from ECMWF
 	echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
 	echo "conda activate base" >> ~/.bashrc
 	# Install jupyter notebook
-	/opt/conda/bin/conda install ipykernel jupyter jupyterlab numpy matplotlib pandas xarray bottleneck dask numba scipy netcdf4 cartopy -y --quiet
+	/opt/conda/bin/conda install ipykernel jupyter numpy matplotlib pandas netcdf4 scipy numba xarray cartopy bottleneck dask -y
 	/opt/conda/bin/pip install h5netcdf
 	/opt/conda/bin/conda install -c conda-forge -y cfgrib eccodes nodejs
+	sed -i 's/Python 2/Sy2/' /opt/conda/share/jupyter/kernels/python3/kernel.json
 	/opt/conda/bin/conda clean -a -y
-	# rename Container Kernel:
-	sed -i 's/Python 3/Sy3/' /opt/conda/share/jupyter/kernels/python3/kernel.json
-
 
 %environment
 	export PATH=/opt/conda/bin:$PATH
 	# important part otherwise the server will try to access /run/user and fail
 	export JUPYTER_RUNTIME_DIR=$PWD/.runtime
-	# make sure we use container kernels, otherwise this will be overwritten
-	# by $HOME/.local/share/jupyter/kernels
+	# Make sure we use container kernels
 	export JUPYTER_DATA_DIR=$PWD/.kernels
-	export JUPYTERLAB_DIR=$PWD/.lab
+  export JUPYTERLAB_DIR=$PWD/.jupyter/lab
