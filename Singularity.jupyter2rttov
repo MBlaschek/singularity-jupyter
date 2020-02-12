@@ -1,38 +1,18 @@
 # BootStrap: localimage
 # From: jupyter23
 Bootstrap: shub
-From: MBlaschek/singularity-jupyter:jupyter23
+From: MBlaschek/singularity-jupyter:centos
 
 
 %help
 Container Centos 6.10 (docker)
 
-Jupyter Notebook/Lab Server
-Options:
-  --NotebookApp.token='super-secret'  	Token when not using a password
-  --ip=0.0.0.0   						port forwarding from VirtualBox
-  --NotebookApp.base_url='/ipython/'	Directory path
-  --port=????							Server port
-
-Create Notebook Password (HOME/.jupyter/jupyter_notebook_config.json):
-	jupyter notebook password
-
-Check Jupyter paths:
-	jupyter --paths
-
-Anaconda Python 3 (Xarray, cfgrib, eccodes)
-Eccodes and CFgrib are Software from ECMWF
+Anaconda Python 2
 
 Run RTTOV 12.3 inside a container
-Download Rttov from https://www.nwpsaf.eu/site/software/rttov/download/#Software
-into rttov directory (local)
-
-RTTOV apps:
-rthelp [execute] 	Creates a rtdoc directory and copies Documentation there.
-rtcoef [execute]	Download RTTOV coeficient files (interactive)
-atlas  [execute]	Download some Emissivity atlas data and BRDF atlas data
-rttest [options]	Run RTTOV test suite (reuqires coefficient files), options: fwd, hires, solar, ...
-rtgui				RTTOV GUI
+Download Rttov from
+https://www.nwpsaf.eu/site/software/rttov/download/#Software
+into rttov directory
 
 %setup
 	mkdir -p ${SINGULARITY_ROOTFS}/rttov
@@ -43,6 +23,7 @@ rtgui				RTTOV GUI
 	# DOC
 	rttov/rttov-wrapper-python.pdf /rtdoc/RTTOV_Python_wrapper.pdf
 	rttov/users_guide_rttov12_v1.3.pdf /rtdoc/RTTOV_User_guide_v12_v1.3.pdf
+	rttov/rttov_gui_v12.pdf /rtdoc/RTTOV_gui_v12.pdf
 	# SRC
 	# RTTOV Source is not available like this
 	rttov/rttov123.tar.gz /rttov/rttov123.tar.gz
@@ -61,7 +42,7 @@ rtgui				RTTOV GUI
 
 %apprun rtcoef
 	echo "Download RTTOV coefficient files to your host"
-	[ -z "$SINGULARITY_BIND" ] && echo -e "Bind /rtcoef to the container (RW) \n BASH ENV e.g.:    export SINGULARITY_BIND=\"${PWD}/rtcoef:/rtcoef\""
+	[ -z "$SINGULARITY_BIND" ] && echo "Bind /rtcoef to the container (RW) \n BASH ENV e.g.:    export SINGULARITY_BIND=\"${PWD}/rtcoef:/rtcoef\""
 	echo "Supply execute as argument to run rttov_coef_download.sh"
 	echo "$@" | grep execute > /dev/null
 	if [ $? -eq 0 ]; then
@@ -73,60 +54,24 @@ rtgui				RTTOV GUI
 		exec ./rttov_coef_download.sh
 	fi
 
-%apprun atlas
-	echo "Download Emissivity/ BRDF Atlas data"
-	echo "Goto: https://www.nwpsaf.eu/site/software/rttov/download/ and Download Emis data"
-	echo "Here only: UW IR atlas data and BRDF atlas data are downloaded"
-	[ -z "$SINGULARITY_BIND" ] && echo -e "Bind /emis_data to the container (RW) \n BASH ENV e.g.:    export SINGULARITY_BIND=\"${PWD}/emis_data:/emis_data\""
-	echo "Supply execute as argument to run rttov_coef_download.sh"
-	echo "$@" | grep execute > /dev/null
-	if [ $? -eq 0 ]; then
-		if [ ! -d /emis_data ]; then
-			mkdir -f /emis_data
-		fi
-		cd /emis_data
-		wget https://www.nwpsaf.eu/downloads/emis_data/uw_ir_emis_atlas_hdf5.tar
-		tar xvf *.tar
-		wget https://www.nwpsaf.eu/downloads/emis_data/telsem2_mw_atlas.tbz
-		tar xjvf *.tbz
-		if [ ! -d /brdf_data ]; then
-			mkdir -f /brdf_data
-		fi
-		cd /brdf_data
-		wget https://www.nwpsaf.eu/downloads/brdf_data/cms_brdf_atlas_hdf5.tar
-		tar xvf *.tar
-	fi
-
 %apprun rttest
 	echo "Running the test suite"
 	cat <<EOF
 Options:
-	Default (no options) runs test_rttov12.sh
+		: Default (no options) runs test_rttov12.sh
 	fwd  	: forward model
 	hires	: hires IR sounders
 	solar	: visible/near-IR solar
 	multi	: multiple instruments together
-	pc		: principal components
+	pc	: principal components
 	htfrtc	: HTFRTC
 EOF
-	[ -z "$SINGULARITY_BIND" ] && echo -e "Bind /rtcoef to the container \n e.g.:    export SINGULARITY_BIND=\"${PWD}/rtcoef:/rtcoef\""
+	[ -z "$SINGULARITY_BIND" ] && echo "Bind /rtcoef to the container \n e.g.:    export SINGULARITY_BIND=\"${PWD}/rtcoef:/rtcoef\""
 	[ -z "$SINGULARITY_BIND" ] || echo "Found Bind: $SINGULARITY_BIND"
-	#
-	# Make Test directory
-	# /tmp/rttest
-	# /tmp/rttest/rttov_test
-	# /tmp/rttest/rtcoef_rttov??
-	#
 	mkdir -p /tmp/rttest
 	cd /tmp/rttest
-	#
-	# Copy tests
-	#
 	cp -urf /rttov/rttov_test . && echo "Tests copied to /tmp/rttest"
-	# Link Coefficients
 	ln -fvs /rtcoef rtcoef_rttov${RTTOV_VERSION} && echo "Coefficients linked"
-	ln -fvs /emis_data . && echo "Emis Atlas linked"
-	ln -fvs /brdf_data . && echo "BDRF Atlas linked"
 	cd rttov_test
 	echo
 	echo "#####################################################"
@@ -163,26 +108,35 @@ EOF
 	echo "Running the Rttov Gui"
 	cd /rttov/gui
 	# Required by GUI
-	export cmdpython=/opt/conda/envs/py2/bin/python
+	export cmdpython=/opt/conda/bin/python
 	exec ./rttovgui
 
 %runscript
 	exec /usr/bin/run.sh "$@"
 
 %post
+  wget --quiet https://repo.anaconda.com/miniconda/Miniconda2-latest-Linux-x86_64.sh -O ~/miniconda.sh && \
+  /bin/bash ~/miniconda.sh -b -p /opt/conda && \
+  rm ~/miniconda.sh && \
+  /opt/conda/bin/conda clean -tipsy && \
+  ln -s /opt/conda/etc/profile.d/conda.sh /etc/profile.d/conda.sh && \
+  echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
+  echo "conda activate base" >> ~/.bashrc
+  # Install jupyter notebook
+  /opt/conda/bin/conda install ipykernel jupyter numpy matplotlib pandas netcdf4 scipy numba xarray cartopy bottleneck dask -y
+  /opt/conda/bin/conda clean -a -y
 	# Additonal
 	yum check-update && yum -y update
 	# gfortran
 	yum groupinstall -y "Development Tools"
-	yum install -y cmake doxygen graphviz chrpath
+	yum install -y cmake doxygen graphviz
 	# install gfortran from anaconda
-	/opt/conda/bin/conda install gfortran_linux-64 gxx_linux-64 sphinx -y
+	/opt/conda/bin/conda install gfortran_linux-64 sphinx -y
 	# conda install libgfortran -y
 	# need netcdf.mod
 	/opt/conda/bin/conda install -c conda-forge netcdf-fortran -y
 	# Clean
 	yum clean all
-
 	# required for CMAKE
 	export PATH=/opt/conda/bin:$PATH
 	export LD_LIBRARY_PATH=/opt/conda/lib:$LD_LIBRARY_PATH
@@ -224,13 +178,6 @@ EOF
 	rm -rf rtcoef_rttov*
 	ln -s /rtcoef/ rtcoef_rttov${RTTOV_VERSION}
 	cp -rfv rtcoef_backup/* /rtcoef
-	# emis
-	mkdir /emis_data
-	rm -rf emis_data/
-	ln -s /emis_data/ emis_data
-	mkdir /brdf_data
-	rm -rf brdf_data/
-	ln -s /brdf_data brdf_data
 	#
 	# Fix links of F2py libs
 	#
@@ -246,7 +193,7 @@ EOF
 	#
 	# make library accessable from python
 	#
-	echo "/rttov/wrapper" > /opt/conda/lib/python3.7/site-packages/rttov.pth
+	echo "/rttov/wrapper" > /opt/conda/lib/python2.7/site-packages/rttov.pth
 	#
 	# Documentation of Python Interface
 	#
@@ -264,30 +211,26 @@ EOF
 	# Gui (requires py2 and wxpython)
 	# recompile with Python2
 	#
-	if false; then
-		/opt/conda/bin/conda install -n py2 -c anaconda wxpython=3.0 h5py matplotlib scipy numpy -y
-		# x11 windows for wxpython
-		# need to change Library path because yum needs system libs
-		oldLD=$LD_LIBRARY_PATH
-		export LD_LIBRARY_PATH=/usr/lib64:/usr/lib:$LD_LIBRARY_PATH
-		# apt install -y libgtk2.0
-		yum install -y gtk2-devel
-		export LD_LIBRARY_PATH=$oldLD
-		# recompile
-		cd src
-		rm -v /usr/local/lib/rttov_gui_f2py.so
-		# change PATH, LD for python 2
-		export PATH=/opt/conda/envs/py2/bin:$PATH
-		export LD_LIBRARY_PATH=/opt/conda/envs/py2/lib:$LD_LIBRARY_PATH
-		../build/Makefile.PL RTTOV_HDF=1 RTTOV_F2PY=1
-		make all ARCH=gfortran-anaconda INSTALLDIR=../usr/local
-		#
-		# fix link
-		#
-		cp -v ../tmp-gfortran-anaconda/gui/rttov_gui_f2py.so /usr/local/lib
-		cd ..
-	fi
-
+	/opt/conda/bin/conda install wxpython=3.0 h5py matplotlib scipy numpy -y
+	# x11 windows for wxpython
+	# need to change Library path because yum needs system libs
+	oldLD=$LD_LIBRARY_PATH
+	export LD_LIBRARY_PATH=/usr/lib64:/usr/lib:$LD_LIBRARY_PATH
+	# apt install -y libgtk2.0
+	yum install -y gtk2-devel
+	export LD_LIBRARY_PATH=$oldLD
+	# recompile
+	# cd src
+	# rm -v /usr/local/lib/rttov_gui_f2py.so
+	# change PATH, LD for python 2
+	# export PATH=/opt/conda/envs/py2/bin:$PATH
+	# export LD_LIBRARY_PATH=/opt/conda/envs/py2/lib:$LD_LIBRARY_PATH
+	# make ARCH=gfortran-anaconda INSTALLDIR=../usr/local
+	#
+	# fix link
+	#
+	# cp -v ../tmp-gfortran-anaconda/gui/rttov_gui_f2py.so /usr/local/lib
+	# cd ..
 	# Clean
 	/opt/conda/bin/conda clean -a -y
 
@@ -306,3 +249,8 @@ EOF
 	export OMP_STACKSIZE=1000M
 	export RTTOV_DIR=/rttov
 	export RTTOV_COEF=/rtcoef
+	# GUI options
+	export RTTOV_GUI_PREFIX=/rttov/gui
+	export RTTOV_GUI_EMISS_DIR=${RTTOV_GUI_PREFIX}/../
+	export RTTOV_GUI_COEFF_DIR=${RTTOV_GUI_PREFIX}/../rtcoef_rttov${RTTOV_VERSION}
+	export RTTOV_GUI_PROFILE_DIR=${RTTOV_GUI_PREFIX}/../rttov_test/profile-datasets-hdf
