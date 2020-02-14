@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Singularity App runscript
 # Author: MB
 # Date: 5.11.2019
@@ -61,7 +61,7 @@ if [ $# -gt 0 ]; then
 	else
 		echo "Executing: $@"
 		exec "$@"
-    fi  
+    fi
 else
     usage
     echo "Bye Bye"

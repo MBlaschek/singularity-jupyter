@@ -1,7 +1,7 @@
 # BootStrap: localimage
-# From: jupyter23
+# From: jupyter3.sif
 Bootstrap: shub
-From: MBlaschek/singularity-jupyter:jupyter23
+From: MBlaschek/singularity-jupyter:jupyter3
 
 
 %help
@@ -32,7 +32,6 @@ rthelp [execute] 	Creates a rtdoc directory and copies Documentation there.
 rtcoef [execute]	Download RTTOV coeficient files (interactive)
 atlas  [execute]	Download some Emissivity atlas data and BRDF atlas data
 rttest [options]	Run RTTOV test suite (reuqires coefficient files), options: fwd, hires, solar, ...
-rtgui				RTTOV GUI
 
 %setup
 	mkdir -p ${SINGULARITY_ROOTFS}/rttov
@@ -159,13 +158,6 @@ EOF
 	echo "rttest used /tmp/rttest"
 	echo "Finished"
 
-%apprun rtgui
-	echo "Running the Rttov Gui"
-	cd /rttov/gui
-	# Required by GUI
-	export cmdpython=/opt/conda/envs/py2/bin/python
-	exec ./rttovgui
-
 %runscript
 	exec /usr/bin/run.sh "$@"
 
@@ -260,34 +252,6 @@ EOF
 	cp *.py /rtdoc/pyexamples/
 	cd ..
 	mv *.pdf /rtdoc
-	#
-	# Gui (requires py2 and wxpython)
-	# recompile with Python2
-	#
-	if false; then
-		/opt/conda/bin/conda install -n py2 -c anaconda wxpython=3.0 h5py matplotlib scipy numpy -y
-		# x11 windows for wxpython
-		# need to change Library path because yum needs system libs
-		oldLD=$LD_LIBRARY_PATH
-		export LD_LIBRARY_PATH=/usr/lib64:/usr/lib:$LD_LIBRARY_PATH
-		# apt install -y libgtk2.0
-		yum install -y gtk2-devel
-		export LD_LIBRARY_PATH=$oldLD
-		# recompile
-		cd src
-		rm -v /usr/local/lib/rttov_gui_f2py.so
-		# change PATH, LD for python 2
-		export PATH=/opt/conda/envs/py2/bin:$PATH
-		export LD_LIBRARY_PATH=/opt/conda/envs/py2/lib:$LD_LIBRARY_PATH
-		../build/Makefile.PL RTTOV_HDF=1 RTTOV_F2PY=1
-		make all ARCH=gfortran-anaconda INSTALLDIR=../usr/local
-		#
-		# fix link
-		#
-		cp -v ../tmp-gfortran-anaconda/gui/rttov_gui_f2py.so /usr/local/lib
-		cd ..
-	fi
-
 	# Clean
 	/opt/conda/bin/conda clean -a -y
 

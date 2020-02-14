@@ -62,7 +62,11 @@ Eccodes and CFgrib are Software from ECMWF
   	nohup /opt/conda/bin/jupyter notebook --NotebookApp.allow_origin="*" --no-browser $@ 2>&1 >> .jupyter3.log &
   	echo "kill $!" > .jupyter3.pid
 
+
 %post
+	# lib GL & QT5
+	yum install -y mesa-libGL tkinter mesa-libEGL libXi
+	# miniconda
 	wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh && \
 	/bin/bash ~/miniconda.sh -b -p /opt/conda && \
 	rm ~/miniconda.sh && \
@@ -72,10 +76,10 @@ Eccodes and CFgrib are Software from ECMWF
 	echo "conda activate base" >> ~/.bashrc
 	# Install jupyter notebook
 	/opt/conda/bin/conda install ipykernel jupyter jupyterlab numpy matplotlib pandas xarray bottleneck dask numba scipy netcdf4 cartopy -y --quiet
-	/opt/conda/bin/pip install h5netcdf
+	/opt/conda/bin/pip install h5netcdf nc-time-axis
 	/opt/conda/bin/conda install -c conda-forge -y cfgrib eccodes nodejs
 	/opt/conda/bin/conda clean -a -y
-	# rename Container Kernel:
+	# rename Container Kernel:no
 	sed -i 's/Python 3/Sy3/' /opt/conda/share/jupyter/kernels/python3/kernel.json
 
 
@@ -87,3 +91,4 @@ Eccodes and CFgrib are Software from ECMWF
 	# by $HOME/.local/share/jupyter/kernels
 	export JUPYTER_DATA_DIR=$PWD/.kernels
 	export JUPYTERLAB_DIR=$PWD/.lab
+

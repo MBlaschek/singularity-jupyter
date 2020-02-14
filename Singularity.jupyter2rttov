@@ -1,18 +1,38 @@
 # BootStrap: localimage
 # From: jupyter23
 Bootstrap: shub
-From: MBlaschek/singularity-jupyter:centos
+From: MBlaschek/singularity-jupyter:jupyter2
 
 
 %help
 Container Centos 6.10 (docker)
 
-Anaconda Python 2
+Jupyter Notebook/Lab Server
+Options:
+  --NotebookApp.token='super-secret'  	Token when not using a password
+  --ip=0.0.0.0   						port forwarding from VirtualBox
+  --NotebookApp.base_url='/ipython/'	Directory path
+  --port=????							Server port
+
+Create Notebook Password (HOME/.jupyter/jupyter_notebook_config.json):
+	jupyter notebook password
+
+Check Jupyter paths:
+	jupyter --paths
+
+Anaconda Python 2 (Xarray, cfgrib, eccodes)
+Eccodes and CFgrib are Software from ECMWF
 
 Run RTTOV 12.3 inside a container
-Download Rttov from
-https://www.nwpsaf.eu/site/software/rttov/download/#Software
-into rttov directory
+Download Rttov from https://www.nwpsaf.eu/site/software/rttov/download/#Software
+into rttov directory (local)
+
+RTTOV apps:
+rthelp [execute] 	Creates a rtdoc directory and copies Documentation there.
+rtcoef [execute]	Download RTTOV coeficient files (interactive)
+atlas  [execute]	Download some Emissivity atlas data and BRDF atlas data
+rttest [options]	Run RTTOV test suite (reuqires coefficient files), options: fwd, hires, solar, ...
+rtgui				Run RTTOV GUI
 
 %setup
 	mkdir -p ${SINGULARITY_ROOTFS}/rttov
@@ -107,6 +127,12 @@ EOF
 %apprun rtgui
 	echo "Running the Rttov Gui"
 	cd /rttov/gui
+	# GUI options
+	export RTTOV_GUI_PREFIX=/rttov/gui
+	export RTTOV_GUI_EMISS_DIR=/rttov
+	export RTTOV_GUI_COEFF_DIR=/rttov/rtcoef_rttov${RTTOV_VERSION}
+	export RTTOV_GUI_PROFILE_DIR=/rttov/rttov_test/profile-datasets-hdf
+	export PYTHONPATH=${RTTOV_GUI_PREFIX}:${PYTHONPATH}
 	# Required by GUI
 	export cmdpython=/opt/conda/bin/python
 	exec ./rttovgui
@@ -115,16 +141,6 @@ EOF
 	exec /usr/bin/run.sh "$@"
 
 %post
-  wget --quiet https://repo.anaconda.com/miniconda/Miniconda2-latest-Linux-x86_64.sh -O ~/miniconda.sh && \
-  /bin/bash ~/miniconda.sh -b -p /opt/conda && \
-  rm ~/miniconda.sh && \
-  /opt/conda/bin/conda clean -tipsy && \
-  ln -s /opt/conda/etc/profile.d/conda.sh /etc/profile.d/conda.sh && \
-  echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
-  echo "conda activate base" >> ~/.bashrc
-  # Install jupyter notebook
-  /opt/conda/bin/conda install ipykernel jupyter numpy matplotlib pandas netcdf4 scipy numba xarray cartopy bottleneck dask -y
-  /opt/conda/bin/conda clean -a -y
 	# Additonal
 	yum check-update && yum -y update
 	# gfortran
@@ -249,8 +265,4 @@ EOF
 	export OMP_STACKSIZE=1000M
 	export RTTOV_DIR=/rttov
 	export RTTOV_COEF=/rtcoef
-	# GUI options
-	export RTTOV_GUI_PREFIX=/rttov/gui
-	export RTTOV_GUI_EMISS_DIR=${RTTOV_GUI_PREFIX}/../
-	export RTTOV_GUI_COEFF_DIR=${RTTOV_GUI_PREFIX}/../rtcoef_rttov${RTTOV_VERSION}
-	export RTTOV_GUI_PROFILE_DIR=${RTTOV_GUI_PREFIX}/../rttov_test/profile-datasets-hdf
+
