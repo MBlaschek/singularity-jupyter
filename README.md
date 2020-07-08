@@ -13,7 +13,7 @@ This is an update from [](https://github.com/singularityhub/jupyter) the offical
 * [NEW] runscript gives informaiton
 * [NEW] Using CentOS 6.10 not Ubuntu anymore
 * [NEW] GLIBC 2.12 compatibility to CentOS 6.10 (Final)
-
+* [NEW] Build NCAR WRF containers with singularity [NCAR WRF containers](https://github.com/NCAR/container-wrf)
 If you haven't installed singularity, do that with [these instructions](http://singularity.lbl.gov/install-linux). 
 
 1. Downlaod Receipie files:
