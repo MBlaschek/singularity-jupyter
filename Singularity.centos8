@@ -1,14 +1,13 @@
 Bootstrap: docker
-#From: centos:8.2
 From: centos:latest
 
 %help
-	Container Centos 8.2 (docker)
+	Container Centos 8 (docker)
 	Glibc: 2.28
 	Installed: wget, git, curl, bzip2 ca-certificates
 
 %labels
-	Container.OS CentOS 8.2
+	Container.OS CentOS 8
 	Container.Glibc 2.28
 	Definition.Author  M. Blaschek
 	Definition.Author.Email michael.blaschek@univie.ac.at

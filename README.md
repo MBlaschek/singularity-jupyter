@@ -37,7 +37,7 @@ Tags are the names above (centos, jupyter23, jupyter3, ...):
 
 ```   
       singularity pull shub://MBlaschek/singularity-jupyter:centos
-```   
+```
 
 ## CREATE
 First create the CentOS container that is used by all the others.
@@ -82,14 +82,14 @@ This line tells jupyter to use a specific directory for its runtime. Otherwise i
 Then to run the container:
 
     singularity run jupyter3.sif
-    
+
 gives Information on the container and it's apps (notebook)
 
     Singularity Container
         Container Centos 6.10 (docker)
         Glibc: 2.12-1.212.el6.x86_64
         Installed: wget, git, curl, bzip2 ca-certificates
-
+    
       SCIF (Apps):  notebook
                                            Container.Glibc : 2.12-1.212.el6.x86_64
                                               Container.OS : CentOS 6.10
@@ -109,7 +109,7 @@ gives Information on the container and it's apps (notebook)
 launch the notebook:
 
     sudo singularity run jupyter3.sif notebook
-    
+
 launch the console:
 
     sudo singularity run jupyter3.sif ipython
@@ -222,6 +222,12 @@ where adding the `-B /run/user:/run/user` option is important, which allows the 
 This is a lightly modified version of what [nickjer](https://github.com/nickjer/singularity-rstudio) has done. The Modifications allow to run the R-Studio server as an instance.
 
     singularity instance start rserver.sif RStudio
-    
+
 Usually the R-Studio server runs on port 9090.
+
+
+
+# Singularity Syntax Highlighting
+
+There is a nice repo [singularity.lang](https://github.com/singularityhub/singularity.lang), where this can be added for Gedit, Nano and Vim. For Atom there is a highlighting as well. Works well.
 

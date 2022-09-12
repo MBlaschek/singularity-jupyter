@@ -1,7 +1,7 @@
-# BootStrap: localimage
-# From: jupyter3.sif
-Bootstrap: shub
-From: MBlaschek/singularity-jupyter:jupyter3
+BootStrap: localimage
+From: jupyter3.sif
+# Bootstrap: shub
+# From: MBlaschek/singularity-jupyter:jupyter3
 
 
 %help
@@ -86,8 +86,9 @@ rttest [options]	Run RTTOV test suite (reuqires coefficient files), options: fwd
 		cd /emis_data
 		wget https://www.nwpsaf.eu/downloads/emis_data/uw_ir_emis_atlas_hdf5.tar
 		tar xvf *.tar
-		wget https://www.nwpsaf.eu/downloads/emis_data/telsem2_mw_atlas.tbz
-		tar xjvf *.tbz
+		wget https://nwp-saf.eumetsat.int/downloads/emis_data/telsem2_mw_atlas.tar.bz2
+		# wget https://www.nwpsaf.eu/downloads/emis_data/telsem2_mw_atlas.tbz
+		tar xjvf *.bz2
 		if [ ! -d /brdf_data ]; then
 			mkdir -f /brdf_data
 		fi
@@ -159,6 +160,9 @@ EOF
 	echo "Finished"
 
 %runscript
+	# mkdir -p $JUPYTER_RUNTIME_DIR
+	# mkdir -p $JUPYTER_DATA_DIR
+	# mkdir -p $JUPYTERLAB_DIR
 	exec /usr/bin/run.sh "$@"
 
 %post

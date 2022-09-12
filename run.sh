@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 # Singularity App runscript
 # Author: MB
 # Date: 5.11.2019

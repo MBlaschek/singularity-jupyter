@@ -57,14 +57,11 @@ Eccodes and CFgrib are Software from ECMWF
 	echo "kill $!" > .jupyter3.pid
 	sleep 5 && echo "Goto: $(cat .jupyter3.log | grep '] http' | tail -n1 | cut -d' ' -f 4)"
 
-%startscript
-	# This is executed when instances are started
-  	nohup /opt/conda/bin/jupyter notebook --NotebookApp.allow_origin="*" --no-browser $@ 2>&1 >> .jupyter3.log &
-  	echo "kill $!" > .jupyter3.pid
-
-
 %post
+	# Fix repo
+	curl https://www.getpagespeed.com/files/centos6-eol.repo --output /etc/yum.repos.d/CentOS-Base.repo
 	# lib GL & QT5
+	yum check-update && yum -y update
 	yum install -y mesa-libGL tkinter mesa-libEGL libXi
 	# miniconda
 	wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh && \

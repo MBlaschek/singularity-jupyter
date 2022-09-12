@@ -56,11 +56,6 @@ Eccodes and CFgrib are Software from ECMWF
 	echo "kill $!" > .jupyter2.pid
 	sleep 5 && echo "Goto: $(cat .jupyter2.log | grep '] http' | tail -n1 | cut -d' ' -f 4)"
 
-%startscript
-	# This is executed when instances are started
-	nohup /opt/conda/bin/jupyter notebook --NotebookApp.allow_origin="*" --no-browser $@ 2>&1 >> .jupyter2.log &
-  	echo "kill $!" > .jupyter2.pid
-
 %post
 	export PATH=/opt/conda/bin:$PATH
 	wget --quiet https://repo.anaconda.com/miniconda/Miniconda2-latest-Linux-x86_64.sh -O ~/miniconda.sh && \

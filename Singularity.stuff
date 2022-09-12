@@ -13,7 +13,7 @@ From: ubuntu:16.04
 %post
 	apt-get -y update
 	DEBIAN_FRONTEND=noninteractive apt-get -y install pandoc texlive-xetex texlive-fonts-recommended texlive-generic-recommended texlive-generic-extra
-
+	# apt-get -y install cdo netcdf-bin nco
 	# DEBIAN_FRONTEND=noninteractive apt-get -y install git xorg meld wget nano pandoc apt-transport-https
 	# download atom editor
 	# wget https://github.com/atom/atom/releases/download/v1.41.0/atom-amd64.deb
@@ -34,4 +34,3 @@ From: ubuntu:16.04
 
 %environment
 	XDG_RUNTIME_DIR=$PWD/.runtime/
-

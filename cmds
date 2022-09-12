@@ -1,0 +1,16 @@
+
+sudo singularity shell -w jupyter3
+
+singularity run --app rserver rstudio.simg --www-port 9090
+
+sudo singularity build wrf.simg Singularity_wrf 
+
+# Use for development
+sudo singularity build --sandbox jupyter3 Singularity_jupyter_3.def
+
+# Convert to image (production)
+sudo singularity build jupyter3.sif jupyter3
+
+
+# Jup3 (dev)
+sudo singularity build --sandbox jup3 Singularity_jupyter3_only.def
