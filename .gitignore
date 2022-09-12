@@ -1,3 +1,5 @@
 *.sif
 *.img
-rtceof/
+rtceof/*
+brdf_data/*
+*.nc
